@@ -14,8 +14,21 @@ $id = (int) ($_POST['id'] ?? 0);
 
 if ($id > 0) {
     try {
+        $uploadDir = __DIR__ . '/assets/uploads/apartamentos/';
+        $stmt = $pdo->prepare('SELECT archivo FROM apartamento_fotos WHERE apartamento_id = ?');
+        $stmt->execute([$id]);
+        $archivos = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
         $stmt = $pdo->prepare('DELETE FROM apartamentos WHERE id = ?');
         $stmt->execute([$id]);
+
+        foreach ($archivos as $archivo) {
+            $ruta = $uploadDir . $archivo;
+            if (is_file($ruta)) {
+                unlink($ruta);
+            }
+        }
+
         header('Location: apartamentos.php?guardado=1');
         exit;
     } catch (PDOException $e) {

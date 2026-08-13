@@ -5,11 +5,10 @@ require_login();
 
 $apartamentos = $pdo->query(
     'SELECT a.*,
-            COUNT(r.id) AS total_reservas,
-            COALESCE(SUM(r.valor_total), 0) AS total_valor
+            (SELECT COUNT(*) FROM reservas r WHERE r.apartamento_id = a.id) AS total_reservas,
+            (SELECT COALESCE(SUM(r.valor_total), 0) FROM reservas r WHERE r.apartamento_id = a.id) AS total_valor,
+            (SELECT archivo FROM apartamento_fotos f WHERE f.apartamento_id = a.id ORDER BY f.id LIMIT 1) AS foto_portada
      FROM apartamentos a
-     LEFT JOIN reservas r ON r.apartamento_id = a.id
-     GROUP BY a.id
      ORDER BY a.nombre'
 )->fetchAll();
 
@@ -33,7 +32,9 @@ require __DIR__ . '/includes/header.php';
 <table class="data-table">
   <thead>
     <tr>
+      <th></th>
       <th>Nombre</th>
+      <th>Propietario</th>
       <th>Dirección</th>
       <th>Reservas registradas</th>
       <th>Valor total generado</th>
@@ -42,11 +43,17 @@ require __DIR__ . '/includes/header.php';
   </thead>
   <tbody>
     <?php if (!$apartamentos): ?>
-      <tr><td colspan="5" class="empty-state">Aún no has registrado apartamentos.</td></tr>
+      <tr><td colspan="7" class="empty-state">Aún no has registrado apartamentos.</td></tr>
     <?php endif; ?>
     <?php foreach ($apartamentos as $a): ?>
       <tr>
+        <td>
+          <?php if ($a['foto_portada']): ?>
+            <img src="assets/uploads/apartamentos/<?= e($a['foto_portada']) ?>" alt="" class="list-thumb">
+          <?php endif; ?>
+        </td>
         <td><?= e($a['nombre']) ?></td>
+        <td><?= e($a['propietario'] ?? '') ?></td>
         <td><?= e($a['direccion'] ?? '') ?></td>
         <td><?= (int) $a['total_reservas'] ?></td>
         <td><?= formatCOP($a['total_valor']) ?></td>

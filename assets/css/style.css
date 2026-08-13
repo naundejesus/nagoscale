@@ -149,6 +149,15 @@ a { color: var(--blue); }
 .badge-booking { background: var(--booking); }
 .badge-web { background: var(--web); }
 
+/* Fotos de apartamento */
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-bottom: 4px; }
+.photo-thumb { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--text-muted); cursor: pointer; }
+.photo-thumb img { width: 100%; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
+.list-thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; }
+
+/* Exportar */
+.export-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+
 /* Formularios */
 .form-card {
   background: var(--card);

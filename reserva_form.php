@@ -12,7 +12,8 @@ if (isset($_GET['id']) && ctype_digit((string) $_GET['id'])) {
 
 $reserva = [
     'apartamento_id' => '',
-    'fecha_reserva' => date('Y-m-d'),
+    'fecha_inicio' => date('Y-m-d'),
+    'fecha_fin' => date('Y-m-d'),
     'plataforma' => 'airbnb',
     'valor_total' => '',
     'notas' => '',
@@ -36,15 +37,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
 
     $apartamentoId = (int) ($_POST['apartamento_id'] ?? 0);
-    $fechaReserva = $_POST['fecha_reserva'] ?? '';
+    $fechaInicio = $_POST['fecha_inicio'] ?? '';
+    $fechaFin = $_POST['fecha_fin'] ?? '';
     $plataforma = $_POST['plataforma'] ?? '';
     $valorTotal = (float) ($_POST['valor_total'] ?? 0);
     $notas = trim((string) ($_POST['notas'] ?? ''));
 
     if ($apartamentoId <= 0) {
         $error = 'Selecciona un apartamento.';
-    } elseif (DateTime::createFromFormat('Y-m-d', $fechaReserva) === false) {
-        $error = 'La fecha de reserva no es válida.';
+    } elseif (DateTime::createFromFormat('Y-m-d', $fechaInicio) === false) {
+        $error = 'La fecha de inicio no es válida.';
+    } elseif (DateTime::createFromFormat('Y-m-d', $fechaFin) === false) {
+        $error = 'La fecha de fin no es válida.';
+    } elseif ($fechaFin < $fechaInicio) {
+        $error = 'La fecha de fin no puede ser anterior a la fecha de inicio.';
     } elseif (!in_array($plataforma, $plataformasValidas, true)) {
         $error = 'Selecciona una plataforma válida.';
     } elseif ($valorTotal <= 0) {
@@ -58,17 +64,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($id) {
             $stmt = $pdo->prepare(
                 'UPDATE reservas
-                 SET apartamento_id = ?, fecha_reserva = ?, plataforma = ?, valor_total = ?,
+                 SET apartamento_id = ?, fecha_inicio = ?, fecha_fin = ?, plataforma = ?, valor_total = ?,
                      valor_propietario = ?, valor_comision = ?, notas = ?
                  WHERE id = ?'
             );
-            $stmt->execute([$apartamentoId, $fechaReserva, $plataforma, $valorTotal, $valorPropietario, $valorComision, $notas ?: null, $id]);
+            $stmt->execute([$apartamentoId, $fechaInicio, $fechaFin, $plataforma, $valorTotal, $valorPropietario, $valorComision, $notas ?: null, $id]);
         } else {
             $stmt = $pdo->prepare(
-                'INSERT INTO reservas (apartamento_id, fecha_reserva, plataforma, valor_total, valor_propietario, valor_comision, notas)
-                 VALUES (?, ?, ?, ?, ?, ?, ?)'
+                'INSERT INTO reservas (apartamento_id, fecha_inicio, fecha_fin, plataforma, valor_total, valor_propietario, valor_comision, notas)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
             );
-            $stmt->execute([$apartamentoId, $fechaReserva, $plataforma, $valorTotal, $valorPropietario, $valorComision, $notas ?: null]);
+            $stmt->execute([$apartamentoId, $fechaInicio, $fechaFin, $plataforma, $valorTotal, $valorPropietario, $valorComision, $notas ?: null]);
         }
         header('Location: reservas.php?guardado=1');
         exit;
@@ -76,7 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $reserva = [
         'apartamento_id' => $apartamentoId,
-        'fecha_reserva' => $fechaReserva,
+        'fecha_inicio' => $fechaInicio,
+        'fecha_fin' => $fechaFin,
         'plataforma' => $plataforma,
         'valor_total' => $valorTotal,
         'notas' => $notas,
@@ -117,8 +124,12 @@ require __DIR__ . '/includes/header.php';
     </select>
   </label>
 
-  <label>Fecha de reserva
-    <input type="date" name="fecha_reserva" value="<?= e($reserva['fecha_reserva']) ?>" required>
+  <label>Fecha de inicio (check-in)
+    <input type="date" name="fecha_inicio" id="fecha_inicio" value="<?= e($reserva['fecha_inicio']) ?>" required>
+  </label>
+
+  <label>Fecha de fin (check-out)
+    <input type="date" name="fecha_fin" id="fecha_fin" value="<?= e($reserva['fecha_fin']) ?>" required>
   </label>
 
   <label>Plataforma
@@ -158,6 +169,14 @@ require __DIR__ . '/includes/header.php';
   }
   document.getElementById('valor_total').addEventListener('input', updatePreview);
   updatePreview();
+
+  document.getElementById('fecha_inicio').addEventListener('change', function () {
+    var fin = document.getElementById('fecha_fin');
+    if (fin.value < this.value) {
+      fin.value = this.value;
+    }
+    fin.min = this.value;
+  });
 </script>
 
 <?php endif; ?>

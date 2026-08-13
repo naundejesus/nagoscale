@@ -5,50 +5,20 @@ require_login();
 
 $apartamentos = $pdo->query('SELECT id, nombre FROM apartamentos ORDER BY nombre')->fetchAll();
 
-$desde = $_GET['desde'] ?? '';
-$hasta = $_GET['hasta'] ?? '';
-$apartamentoId = $_GET['apartamento_id'] ?? '';
-$plataforma = $_GET['plataforma'] ?? '';
-$plataformasValidas = ['airbnb', 'booking', 'web'];
+$filtro = obtener_reservas_filtradas($pdo);
+$desde = $filtro['desde'];
+$hasta = $filtro['hasta'];
+$apartamentoId = $filtro['apartamento_id'];
+$plataforma = $filtro['plataforma'];
+$reservas = $filtro['reservas'];
+$totales = $filtro['totales'];
 
-$where = [];
-$params = [];
-
-if ($desde !== '' && DateTime::createFromFormat('Y-m-d', $desde) !== false) {
-    $where[] = 'r.fecha_reserva >= ?';
-    $params[] = $desde;
-}
-if ($hasta !== '' && DateTime::createFromFormat('Y-m-d', $hasta) !== false) {
-    $where[] = 'r.fecha_reserva <= ?';
-    $params[] = $hasta;
-}
-if ($apartamentoId !== '' && ctype_digit((string) $apartamentoId)) {
-    $where[] = 'r.apartamento_id = ?';
-    $params[] = $apartamentoId;
-}
-if ($plataforma !== '' && in_array($plataforma, $plataformasValidas, true)) {
-    $where[] = 'r.plataforma = ?';
-    $params[] = $plataforma;
-}
-
-$sql = 'SELECT r.*, a.nombre AS apartamento_nombre
-        FROM reservas r
-        JOIN apartamentos a ON a.id = r.apartamento_id';
-if ($where) {
-    $sql .= ' WHERE ' . implode(' AND ', $where);
-}
-$sql .= ' ORDER BY r.fecha_reserva DESC, r.id DESC';
-
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$reservas = $stmt->fetchAll();
-
-$totales = ['total' => 0.0, 'propietario' => 0.0, 'comision' => 0.0];
-foreach ($reservas as $r) {
-    $totales['total'] += (float) $r['valor_total'];
-    $totales['propietario'] += (float) $r['valor_propietario'];
-    $totales['comision'] += (float) $r['valor_comision'];
-}
+$queryString = http_build_query(array_filter([
+    'desde' => $desde,
+    'hasta' => $hasta,
+    'apartamento_id' => $apartamentoId,
+    'plataforma' => $plataforma,
+]));
 
 $pageTitle = 'Reservas';
 require __DIR__ . '/includes/header.php';
@@ -97,6 +67,11 @@ require __DIR__ . '/includes/header.php';
   <?php endif; ?>
 </form>
 
+<div class="export-bar">
+  <a href="reservas_exportar.php?<?= e($queryString) ?>" class="btn btn-secondary">⬇ Exportar a Excel</a>
+  <a href="reservas_imprimir.php?<?= e($queryString) ?>" class="btn btn-secondary" target="_blank">🖨 Exportar a PDF</a>
+</div>
+
 <div class="summary-cards">
   <div class="summary-card">
     <span class="summary-label">Reservas</span>
@@ -120,8 +95,10 @@ require __DIR__ . '/includes/header.php';
 <table class="data-table">
   <thead>
     <tr>
-      <th>Fecha</th>
+      <th>Check-in</th>
+      <th>Check-out</th>
       <th>Apartamento</th>
+      <th>Propietario</th>
       <th>Plataforma</th>
       <th>Valor total</th>
       <th>75% Propietario</th>
@@ -132,12 +109,14 @@ require __DIR__ . '/includes/header.php';
   </thead>
   <tbody>
     <?php if (!$reservas): ?>
-      <tr><td colspan="8" class="empty-state">No hay reservas para los filtros seleccionados.</td></tr>
+      <tr><td colspan="10" class="empty-state">No hay reservas para los filtros seleccionados.</td></tr>
     <?php endif; ?>
     <?php foreach ($reservas as $r): ?>
       <tr>
-        <td><?= e((new DateTime($r['fecha_reserva']))->format('d/m/Y')) ?></td>
+        <td><?= e((new DateTime($r['fecha_inicio']))->format('d/m/Y')) ?></td>
+        <td><?= e((new DateTime($r['fecha_fin']))->format('d/m/Y')) ?></td>
         <td><?= e($r['apartamento_nombre']) ?></td>
+        <td><?= e($r['apartamento_propietario'] ?? '') ?></td>
         <td><span class="badge badge-<?= e($r['plataforma']) ?>"><?= e(plataformaLabel($r['plataforma'])) ?></span></td>
         <td><?= formatCOP($r['valor_total']) ?></td>
         <td><?= formatCOP($r['valor_propietario']) ?></td>
