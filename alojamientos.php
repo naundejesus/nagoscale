@@ -11,7 +11,6 @@ $precioMin = $_GET['precio_min'] ?? '';
 $precioMax = $_GET['precio_max'] ?? '';
 $habitacionesMin = (int) ($_GET['habitaciones_min'] ?? 0);
 $banosMin = (int) ($_GET['banos_min'] ?? 0);
-$calificacionMin = (int) ($_GET['calificacion_min'] ?? 0);
 $amenidadesSeleccionadas = array_intersect(
     (array) ($_GET['amenidades'] ?? []),
     array_keys(amenidades_disponibles())
@@ -74,11 +73,6 @@ $sql = "SELECT a.*,
         FROM apartamentos a";
 if ($where) {
     $sql .= ' WHERE ' . implode(' AND ', $where);
-}
-
-if ($calificacionMin > 0) {
-    $sql = "SELECT * FROM ($sql) t WHERE t.promedio_calificacion >= ?";
-    $params[] = $calificacionMin;
 }
 
 $sql .= " ORDER BY $ordenSql";
@@ -189,16 +183,6 @@ $pageTitle = 'Todos los alojamientos disponibles';
             <option value="0">Cualquiera</option>
             <?php for ($i = 1; $i <= 4; $i++): ?>
               <option value="<?= $i ?>" <?= $banosMin === $i ? 'selected' : '' ?>><?= $i ?>+</option>
-            <?php endfor; ?>
-          </select>
-        </div>
-
-        <div class="ne-filter-group">
-          <h3>Calificación mínima</h3>
-          <select name="calificacion_min">
-            <option value="0">Cualquiera</option>
-            <?php for ($i = 5; $i >= 1; $i--): ?>
-              <option value="<?= $i ?>" <?= $calificacionMin === $i ? 'selected' : '' ?>><?= $i ?>+ estrellas</option>
             <?php endfor; ?>
           </select>
         </div>
