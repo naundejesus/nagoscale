@@ -55,6 +55,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Selecciona una plataforma válida.';
     } elseif ($valorTotal <= 0) {
         $error = 'El valor total debe ser mayor que cero.';
+    } else {
+        $sqlSolape = 'SELECT COUNT(*) FROM reservas WHERE apartamento_id = ? AND fecha_inicio <= ? AND fecha_fin >= ?';
+        $paramsSolape = [$apartamentoId, $fechaFin, $fechaInicio];
+        if ($id) {
+            $sqlSolape .= ' AND id != ?';
+            $paramsSolape[] = $id;
+        }
+        $stmt = $pdo->prepare($sqlSolape);
+        $stmt->execute($paramsSolape);
+        if ((int) $stmt->fetchColumn() > 0) {
+            $error = 'Ese apartamento ya tiene una reserva que se cruza con las fechas seleccionadas.';
+        }
     }
 
     if (!$error) {
@@ -132,6 +144,11 @@ require __DIR__ . '/includes/header.php';
     <input type="date" name="fecha_fin" id="fecha_fin" value="<?= e($reserva['fecha_fin']) ?>" required>
   </label>
 
+  <div class="calendario-wrap">
+    <span class="calendario-titulo">Disponibilidad de este apartamento</span>
+    <div id="calendario" data-excluir-id="<?= $id ? (int) $id : '' ?>"></div>
+  </div>
+
   <label>Plataforma
     <select name="plataforma" required>
       <option value="airbnb" <?= $reserva['plataforma'] === 'airbnb' ? 'selected' : '' ?>>Airbnb</option>
@@ -178,6 +195,7 @@ require __DIR__ . '/includes/header.php';
     fin.min = this.value;
   });
 </script>
+<script src="assets/js/calendario.js"></script>
 
 <?php endif; ?>
 
