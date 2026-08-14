@@ -283,6 +283,19 @@ input:focus, select:focus, textarea:focus {
 .ne-logo .brand-mark { width: 32px; height: 32px; font-size: 15px; }
 .ne-logo span { color: var(--primary); }
 .ne-header-actions { display: flex; align-items: center; gap: 10px; }
+.ne-header-cta {
+  border-radius: 999px;
+  padding: 11px 22px;
+  font-size: 13px;
+  box-shadow: 0 6px 18px rgba(14, 87, 225, 0.28);
+  white-space: nowrap;
+}
+.ne-header-cta:hover { box-shadow: 0 8px 22px rgba(14, 87, 225, 0.38); }
+.ne-header-cta::before { content: '🏠 '; }
+@media (max-width: 640px) {
+  .ne-header-cta { padding: 9px 14px; font-size: 0; }
+  .ne-header-cta::before { content: '🏠'; font-size: 18px; }
+}
 
 /* Hero */
 .ne-hero {

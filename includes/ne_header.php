@@ -8,5 +8,6 @@ declare(strict_types=1);
       <span class="brand-mark">N</span>
       Nago<span>Scale</span>
     </a>
+    <a href="alojamientos.php" class="btn btn-primary ne-header-cta">Ver todos los alojamientos disponibles</a>
   </div>
 </header>
