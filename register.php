@@ -12,11 +12,14 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
     $username = trim($_POST['username'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $password = (string) ($_POST['password'] ?? '');
     $password2 = (string) ($_POST['password2'] ?? '');
 
     if ($username === '' || mb_strlen($username) < 3) {
         $error = 'El usuario debe tener al menos 3 caracteres.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Escribe un correo electrónico válido (te avisaremos ahí de nuevas solicitudes de reserva).';
     } elseif (mb_strlen($password) < 8) {
         $error = 'La contraseña debe tener al menos 8 caracteres.';
     } elseif ($password !== $password2) {
@@ -27,8 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->fetch()) {
             $error = 'Ese usuario ya existe, elige otro.';
         } else {
-            $stmt = $pdo->prepare('INSERT INTO users (username, password_hash) VALUES (?, ?)');
-            $stmt->execute([$username, password_hash($password, PASSWORD_DEFAULT)]);
+            $stmt = $pdo->prepare('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)');
+            $stmt->execute([$username, $email, password_hash($password, PASSWORD_DEFAULT)]);
             $userId = (int) $pdo->lastInsertId();
 
             session_regenerate_id(true);
@@ -59,6 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?= csrf_field() ?>
     <label>Usuario
       <input type="text" name="username" value="<?= e($_POST['username'] ?? '') ?>" required minlength="3" autofocus>
+    </label>
+    <label>Correo electrónico
+      <input type="email" name="email" value="<?= e($_POST['email'] ?? '') ?>" required>
     </label>
     <label>Contraseña
       <input type="password" name="password" required minlength="8">

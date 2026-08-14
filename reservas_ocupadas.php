@@ -1,7 +1,11 @@
 <?php
 declare(strict_types=1);
 require __DIR__ . '/includes/bootstrap.php';
-require_login();
+
+// Pública a propósito: la usa tanto el panel interno como el formulario
+// público de solicitud de reserva. Solo expone qué fechas están ocupadas
+// para un apartamento (sin datos sensibles), es necesaria para que un
+// cliente sin cuenta pueda ver la disponibilidad antes de solicitar.
 
 header('Content-Type: application/json; charset=UTF-8');
 
@@ -13,8 +17,8 @@ if ($apartamentoId <= 0) {
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT COUNT(*) FROM apartamentos WHERE id = ? AND user_id = ?');
-$stmt->execute([$apartamentoId, current_user_id()]);
+$stmt = $pdo->prepare('SELECT COUNT(*) FROM apartamentos WHERE id = ?');
+$stmt->execute([$apartamentoId]);
 if ((int) $stmt->fetchColumn() === 0) {
     echo json_encode([]);
     exit;

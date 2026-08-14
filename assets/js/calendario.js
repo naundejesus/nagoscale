@@ -4,8 +4,14 @@
   var finInput = document.getElementById('fecha_fin');
   var calendarEl = document.getElementById('calendario');
 
-  if (!apartamentoSelect || !inicioInput || !finInput || !calendarEl) {
+  if (!inicioInput || !finInput || !calendarEl) {
     return;
+  }
+
+  var apartamentoFijoId = calendarEl.getAttribute('data-apartamento-id') || '';
+
+  function apartamentoIdActual() {
+    return apartamentoSelect ? apartamentoSelect.value : apartamentoFijoId;
   }
 
   var excluirId = calendarEl.getAttribute('data-excluir-id') || '';
@@ -30,7 +36,7 @@
   }
 
   function cargarOcupadas() {
-    var apId = apartamentoSelect.value;
+    var apId = apartamentoIdActual();
     if (!apId) {
       ocupadas = {};
       render();
@@ -66,7 +72,7 @@
   }
 
   function onDiaClick(iso) {
-    if (!apartamentoSelect.value || ocupadas[iso]) {
+    if (!apartamentoIdActual() || ocupadas[iso]) {
       return;
     }
     if (!seleccionInicio || (seleccionInicio && seleccionFin) || iso < seleccionInicio) {
@@ -139,7 +145,7 @@
     html += '<span class="cal-tag cal-tag-ocupado">Ocupado</span>';
     html += '</div>';
 
-    if (!apartamentoSelect.value) {
+    if (!apartamentoIdActual()) {
       html += '<p class="cal-hint">Selecciona un apartamento para ver su disponibilidad.</p>';
     }
 
@@ -167,11 +173,13 @@
     render();
   }
 
-  apartamentoSelect.addEventListener('change', function () {
-    seleccionInicio = null;
-    seleccionFin = null;
-    cargarOcupadas();
-  });
+  if (apartamentoSelect) {
+    apartamentoSelect.addEventListener('change', function () {
+      seleccionInicio = null;
+      seleccionFin = null;
+      cargarOcupadas();
+    });
+  }
   inicioInput.addEventListener('change', sincronizarDesdeInputs);
   finInput.addEventListener('change', sincronizarDesdeInputs);
 
