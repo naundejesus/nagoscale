@@ -162,13 +162,13 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
 
   <?php if ($fotos): ?>
     <div class="ne-gallery">
-      <div class="ne-gallery-main">
+      <div class="ne-gallery-main" onclick="document.getElementById('ne-lightbox').style.display='flex'" style="cursor:pointer;">
         <img src="assets/uploads/apartamentos/<?= e($fotos[0]) ?>" alt="<?= e($apartamento['nombre']) ?>" id="ne-foto-principal">
       </div>
       <div class="ne-gallery-side">
         <?php for ($i = 1; $i <= 4; $i++): ?>
           <?php if (isset($fotos[$i])): ?>
-            <div class="<?= ($i === 4 && count($fotos) > 5) ? 'ne-gallery-more' : '' ?>" data-mas="+<?= count($fotos) - 5 ?> fotos">
+            <div class="<?= ($i === 4 && count($fotos) > 5) ? 'ne-gallery-more' : '' ?>" data-mas="+<?= count($fotos) - 5 ?> fotos" onclick="document.getElementById('ne-lightbox').style.display='flex'" style="cursor:pointer;">
               <img src="assets/uploads/apartamentos/<?= e($fotos[$i]) ?>" alt="">
             </div>
           <?php else: ?>
