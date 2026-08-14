@@ -82,7 +82,7 @@ if ($orden === 'precio_desc') $ordenSql = 'a.precio_noche IS NULL, a.precio_noch
 if ($orden === 'calificacion') $ordenSql = 'promedio_calificacion DESC, total_resenas DESC';
 
 $sql = "SELECT a.*,
-            (SELECT archivo FROM apartamento_fotos f WHERE f.apartamento_id = a.id ORDER BY f.id LIMIT 1) AS foto_portada,
+            (SELECT archivo FROM apartamento_fotos f WHERE f.apartamento_id = a.id ORDER BY f.es_principal DESC, f.id ASC LIMIT 1) AS foto_portada,
             (SELECT COUNT(*) FROM apartamento_fotos f WHERE f.apartamento_id = a.id) AS total_fotos,
             (SELECT COALESCE(AVG(calificacion), 0) FROM resenas r WHERE r.apartamento_id = a.id) AS promedio_calificacion,
             (SELECT COUNT(*) FROM resenas r WHERE r.apartamento_id = a.id) AS total_resenas

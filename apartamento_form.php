@@ -43,7 +43,7 @@ if ($id) {
     $apartamento = $found;
     $amenidadesSeleccionadas = decodificar_amenidades($found['amenidades'] ?? null);
 
-    $stmt = $pdo->prepare('SELECT * FROM apartamento_fotos WHERE apartamento_id = ? ORDER BY id');
+    $stmt = $pdo->prepare('SELECT * FROM apartamento_fotos WHERE apartamento_id = ? ORDER BY es_principal DESC, id ASC');
     $stmt->execute([$id]);
     $fotos = $stmt->fetchAll();
 
@@ -170,6 +170,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+        // Foto principal: si el usuario eligió una foto existente, esa manda.
+        // Si no hay ninguna marcada como principal (apartamento nuevo o recién
+        // subieron fotos por primera vez), se usa la más antigua por defecto.
+        $fotoPrincipalId = (int) ($_POST['foto_principal'] ?? 0);
+        if ($fotoPrincipalId > 0) {
+            $stmt = $pdo->prepare('SELECT COUNT(*) FROM apartamento_fotos WHERE id = ? AND apartamento_id = ?');
+            $stmt->execute([$fotoPrincipalId, $apartamentoId]);
+            if ((int) $stmt->fetchColumn() > 0) {
+                $pdo->prepare('UPDATE apartamento_fotos SET es_principal = 0 WHERE apartamento_id = ?')->execute([$apartamentoId]);
+                $pdo->prepare('UPDATE apartamento_fotos SET es_principal = 1 WHERE id = ?')->execute([$fotoPrincipalId]);
+            }
+        } else {
+            $stmt = $pdo->prepare('SELECT COUNT(*) FROM apartamento_fotos WHERE apartamento_id = ? AND es_principal = 1');
+            $stmt->execute([$apartamentoId]);
+            if ((int) $stmt->fetchColumn() === 0) {
+                $stmt = $pdo->prepare('SELECT id FROM apartamento_fotos WHERE apartamento_id = ? ORDER BY id ASC LIMIT 1');
+                $stmt->execute([$apartamentoId]);
+                $primeraFotoId = $stmt->fetchColumn();
+                if ($primeraFotoId) {
+                    $pdo->prepare('UPDATE apartamento_fotos SET es_principal = 1 WHERE id = ?')->execute([$primeraFotoId]);
+                }
+            }
+        }
+
         header('Location: apartamentos.php?guardado=1');
         exit;
     }
@@ -280,12 +304,18 @@ require __DIR__ . '/includes/header.php';
   <?php if ($fotos): ?>
     <div>
       <span style="display:block; font-size:13px; color:var(--text-secondary); font-weight:600; margin-bottom:8px;">
-        Fotos actuales (<?= count($fotos) ?>/<?= MAX_FOTOS_APARTAMENTO ?>)
+        Fotos actuales (<?= count($fotos) ?>/<?= MAX_FOTOS_APARTAMENTO ?>) — elige cuál es la foto principal (la que se ve en los listados)
       </span>
       <div class="photo-grid">
         <?php foreach ($fotos as $foto): ?>
           <label class="photo-thumb">
             <img src="assets/uploads/apartamentos/<?= e($foto['archivo']) ?>" alt="Foto del apartamento">
+            <span>
+              <label style="display:inline-flex; align-items:center; gap:4px; font-weight:600;">
+                <input type="radio" name="foto_principal" value="<?= (int) $foto['id'] ?>" <?= $foto['es_principal'] ? 'checked' : '' ?>>
+                Principal
+              </label>
+            </span>
             <span><input type="checkbox" name="eliminar_foto[]" value="<?= (int) $foto['id'] ?>"> Eliminar</span>
           </label>
         <?php endforeach; ?>

@@ -357,7 +357,7 @@ input:focus, select:focus, textarea:focus {
 
 /* Resultados: layout con filtros + grid + mapa */
 .ne-results-layout { display: grid; grid-template-columns: 260px 1fr; gap: 28px; align-items: start; }
-.ne-results-layout.con-mapa { grid-template-columns: 260px 1fr 380px; }
+.ne-results-layout.con-mapa { grid-template-columns: 240px 1fr 300px; gap: 24px; }
 .ne-results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
 .ne-results-count { font-size: 15px; color: var(--text-secondary); }
 .ne-results-count strong { color: var(--dark); }
@@ -373,8 +373,8 @@ input:focus, select:focus, textarea:focus {
 .ne-filter-actions { display: flex; gap: 10px; }
 
 /* Grid de resultados */
-.ne-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-.ne-results-layout.con-mapa .ne-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.ne-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 28px; }
+.ne-results-layout.con-mapa .ne-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
 
 /* Property card */
 .ne-card {
@@ -384,9 +384,10 @@ input:focus, select:focus, textarea:focus {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
-.ne-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.ne-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); border-color: #d7ddea; }
 .ne-card-media { position: relative; }
 .ne-card-img { width: 100%; height: 180px; object-fit: cover; display: block; }
 .ne-card-img-placeholder { background: linear-gradient(120deg, var(--dark) 0%, var(--primary) 140%); height: 180px; }
@@ -539,7 +540,10 @@ input:focus, select:focus, textarea:focus {
   .ne-listing-layout { grid-template-columns: 1fr; }
   .ne-booking-card { position: static; }
   .ne-gallery { grid-template-columns: 1fr; height: auto; }
+  .ne-gallery-main { height: auto; }
+  .ne-gallery-main img { height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
   .ne-gallery-side { display: none; }
+  .ne-gallery-btn { bottom: 12px; right: 12px; padding: 7px 12px; font-size: 12px; }
 }
 
 @media (max-width: 640px) {

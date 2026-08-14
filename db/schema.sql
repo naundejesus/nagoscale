@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS apartamento_fotos (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   apartamento_id INT UNSIGNED NOT NULL,
   archivo VARCHAR(255) NOT NULL,
+  es_principal TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_fotos_apartamento FOREIGN KEY (apartamento_id)
     REFERENCES apartamentos(id) ON DELETE CASCADE,

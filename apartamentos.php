@@ -7,7 +7,7 @@ $stmt = $pdo->prepare(
     'SELECT a.*,
             (SELECT COUNT(*) FROM reservas r WHERE r.apartamento_id = a.id) AS total_reservas,
             (SELECT COALESCE(SUM(r.valor_total), 0) FROM reservas r WHERE r.apartamento_id = a.id) AS total_valor,
-            (SELECT archivo FROM apartamento_fotos f WHERE f.apartamento_id = a.id ORDER BY f.id LIMIT 1) AS foto_portada
+            (SELECT archivo FROM apartamento_fotos f WHERE f.apartamento_id = a.id ORDER BY f.es_principal DESC, f.id ASC LIMIT 1) AS foto_portada
      FROM apartamentos a
      WHERE a.user_id = ?
      ORDER BY a.nombre'

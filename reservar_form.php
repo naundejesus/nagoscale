@@ -16,7 +16,7 @@ $stmt = $pdo->prepare('SELECT id, username FROM users WHERE id = ?');
 $stmt->execute([$apartamento['user_id']]);
 $propietarioCuenta = $stmt->fetch();
 
-$stmt = $pdo->prepare('SELECT archivo FROM apartamento_fotos WHERE apartamento_id = ? ORDER BY id LIMIT 20');
+$stmt = $pdo->prepare('SELECT archivo FROM apartamento_fotos WHERE apartamento_id = ? ORDER BY es_principal DESC, id ASC LIMIT 20');
 $stmt->execute([$apartamentoId]);
 $fotos = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
