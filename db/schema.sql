@@ -25,10 +25,17 @@ CREATE TABLE IF NOT EXISTS apartamentos (
   capacidad_huespedes SMALLINT UNSIGNED NULL,
   precio_noche DECIMAL(12,2) NULL,
   precio_fin_semana DECIMAL(12,2) NULL,
+  ciudad VARCHAR(100) NULL,
+  zona VARCHAR(100) NULL,
+  descripcion TEXT NULL,
+  amenidades TEXT NULL,
+  latitud DECIMAL(10,7) NULL,
+  longitud DECIMAL(10,7) NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_apartamentos_user FOREIGN KEY (user_id)
     REFERENCES users(id),
-  INDEX idx_apartamentos_user (user_id)
+  INDEX idx_apartamentos_user (user_id),
+  INDEX idx_apartamentos_ciudad (ciudad)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS apartamento_fotos (
@@ -69,6 +76,7 @@ CREATE TABLE IF NOT EXISTS solicitudes (
   mensaje VARCHAR(500) NULL,
   fecha_inicio DATE NOT NULL,
   fecha_fin DATE NOT NULL,
+  huespedes SMALLINT UNSIGNED NULL,
   valor_estimado DECIMAL(12,2) NULL,
   estado ENUM('pendiente','aprobada','rechazada') NOT NULL DEFAULT 'pendiente',
   reserva_id INT UNSIGNED NULL,
@@ -79,4 +87,16 @@ CREATE TABLE IF NOT EXISTS solicitudes (
     REFERENCES reservas(id) ON DELETE SET NULL,
   INDEX idx_solicitudes_apartamento (apartamento_id),
   INDEX idx_solicitudes_estado (estado)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS resenas (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  apartamento_id INT UNSIGNED NOT NULL,
+  nombre_cliente VARCHAR(120) NOT NULL,
+  calificacion TINYINT UNSIGNED NOT NULL,
+  comentario TEXT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_resenas_apartamento FOREIGN KEY (apartamento_id)
+    REFERENCES apartamentos(id) ON DELETE CASCADE,
+  INDEX idx_resenas_apartamento (apartamento_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
