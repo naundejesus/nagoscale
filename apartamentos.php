@@ -38,7 +38,8 @@ require __DIR__ . '/includes/header.php';
       <th></th>
       <th>Nombre</th>
       <th>Propietario</th>
-      <th>Dirección</th>
+      <th>Características</th>
+      <th>Precio/noche</th>
       <th>Reservas registradas</th>
       <th>Valor total generado</th>
       <th></th>
@@ -46,7 +47,7 @@ require __DIR__ . '/includes/header.php';
   </thead>
   <tbody>
     <?php if (!$apartamentos): ?>
-      <tr><td colspan="7" class="empty-state">Aún no has registrado apartamentos.</td></tr>
+      <tr><td colspan="8" class="empty-state">Aún no has registrado apartamentos.</td></tr>
     <?php endif; ?>
     <?php foreach ($apartamentos as $a): ?>
       <tr>
@@ -57,7 +58,26 @@ require __DIR__ . '/includes/header.php';
         </td>
         <td><?= e($a['nombre']) ?></td>
         <td><?= e($a['propietario'] ?? '') ?></td>
-        <td><?= e($a['direccion'] ?? '') ?></td>
+        <td>
+          <?php
+            $rasgos = [];
+            if ($a['habitaciones'] !== null) $rasgos[] = $a['habitaciones'] . ' hab.';
+            if ($a['cocinas'] !== null) $rasgos[] = $a['cocinas'] . ' cocina(s)';
+            if ($a['banos'] !== null) $rasgos[] = $a['banos'] . ' baño(s)';
+            if ($a['capacidad_huespedes'] !== null) $rasgos[] = 'hasta ' . $a['capacidad_huespedes'] . ' huéspedes';
+            echo e($rasgos ? implode(' · ', $rasgos) : '—');
+          ?>
+        </td>
+        <td>
+          <?php if ($a['precio_noche'] !== null): ?>
+            <?= formatCOP($a['precio_noche']) ?>
+            <?php if ($a['precio_fin_semana'] !== null): ?>
+              <br><span style="font-size:11px; color:var(--text-muted);">Finde: <?= formatCOP($a['precio_fin_semana']) ?></span>
+            <?php endif; ?>
+          <?php else: ?>
+            —
+          <?php endif; ?>
+        </td>
         <td><?= (int) $a['total_reservas'] ?></td>
         <td><?= formatCOP($a['total_valor']) ?></td>
         <td class="actions-cell">

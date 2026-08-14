@@ -26,7 +26,7 @@ if ($solicitud['estado'] !== 'pendiente') {
 
 $error = '';
 $plataformasValidas = ['airbnb', 'booking', 'web'];
-$valorTotal = '';
+$valorTotal = $solicitud['valor_estimado'] ?? '';
 $plataforma = 'web';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

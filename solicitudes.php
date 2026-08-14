@@ -40,13 +40,14 @@ require __DIR__ . '/includes/header.php';
       <th>Cliente</th>
       <th>Contacto</th>
       <th>Fechas solicitadas</th>
+      <th>Valor estimado</th>
       <th>Mensaje</th>
       <th></th>
     </tr>
   </thead>
   <tbody>
     <?php if (!$solicitudes): ?>
-      <tr><td colspan="7" class="empty-state">Aún no has recibido solicitudes de clientes.</td></tr>
+      <tr><td colspan="8" class="empty-state">Aún no has recibido solicitudes de clientes.</td></tr>
     <?php endif; ?>
     <?php foreach ($solicitudes as $s): ?>
       <tr>
@@ -62,6 +63,7 @@ require __DIR__ . '/includes/header.php';
           &ndash;
           <?= e((new DateTime($s['fecha_fin']))->format('d/m/Y')) ?>
         </td>
+        <td><?= $s['valor_estimado'] !== null ? formatCOP($s['valor_estimado']) : '—' ?></td>
         <td><?= e($s['mensaje'] ?? '') ?></td>
         <td class="actions-cell">
           <?php if ($s['estado'] === 'pendiente'): ?>

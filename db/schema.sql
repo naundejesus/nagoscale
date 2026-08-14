@@ -6,6 +6,10 @@ CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(50) NOT NULL UNIQUE,
   email VARCHAR(120) NULL,
   password_hash VARCHAR(255) NOT NULL,
+  nequi_numero VARCHAR(20) NULL,
+  bancolombia_tipo_cuenta VARCHAR(20) NULL,
+  bancolombia_numero VARCHAR(30) NULL,
+  bancolombia_titular VARCHAR(120) NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -15,6 +19,12 @@ CREATE TABLE IF NOT EXISTS apartamentos (
   nombre VARCHAR(120) NOT NULL,
   propietario VARCHAR(120) NULL,
   direccion VARCHAR(255) NULL,
+  habitaciones SMALLINT UNSIGNED NULL,
+  cocinas SMALLINT UNSIGNED NULL,
+  banos SMALLINT UNSIGNED NULL,
+  capacidad_huespedes SMALLINT UNSIGNED NULL,
+  precio_noche DECIMAL(12,2) NULL,
+  precio_fin_semana DECIMAL(12,2) NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_apartamentos_user FOREIGN KEY (user_id)
     REFERENCES users(id),
@@ -59,6 +69,7 @@ CREATE TABLE IF NOT EXISTS solicitudes (
   mensaje VARCHAR(500) NULL,
   fecha_inicio DATE NOT NULL,
   fecha_fin DATE NOT NULL,
+  valor_estimado DECIMAL(12,2) NULL,
   estado ENUM('pendiente','aprobada','rechazada') NOT NULL DEFAULT 'pendiente',
   reserva_id INT UNSIGNED NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
