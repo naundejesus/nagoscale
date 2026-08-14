@@ -10,8 +10,8 @@ function obtener_reservas_filtradas(PDO $pdo): array
     $apartamentoId = $_GET['apartamento_id'] ?? '';
     $plataforma = $_GET['plataforma'] ?? '';
 
-    $where = [];
-    $params = [];
+    $where = ['a.user_id = ?'];
+    $params = [current_user_id()];
 
     if ($desde !== '' && DateTime::createFromFormat('Y-m-d', $desde) !== false) {
         $where[] = 'r.fecha_fin >= ?';

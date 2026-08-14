@@ -1,10 +1,13 @@
 # Inmuebles por Días — NagoScale
 
-Aplicación para gestionar reservas de apartamentos (Airbnb, Booking y publicidad
-web propia): registra apartamentos, reservas con su fecha, plataforma de origen
-y valor total, y calcula automáticamente el 75% que corresponde al propietario
-y el 25% que corresponde a NagoScale. Permite filtrar por rango de fechas,
-apartamento y plataforma, mostrando los totales del filtro aplicado.
+Aplicación multi-usuario para gestionar reservas de apartamentos (Airbnb, Booking
+y publicidad web propia): registra apartamentos, reservas con sus fechas de
+check-in/check-out, plataforma de origen y valor total, y calcula automáticamente
+el 75% que corresponde al propietario y el 25% que corresponde a NagoScale.
+Cualquiera puede crear su propia cuenta desde `register.php` y solo ve sus
+propios apartamentos y reservas. Permite filtrar por rango de fechas,
+apartamento y plataforma, mostrando los totales del filtro aplicado, y
+exportar el listado a Excel o PDF.
 
 Construida en **PHP + MySQL** puro (sin frameworks ni build steps) para
 funcionar en hosting compartido con cPanel, como **Hostinger**.
@@ -32,10 +35,10 @@ funcionar en hosting compartido con cPanel, como **Hostinger**.
 6. **Subir el logo/banner.** Guarda tu imagen del banner como
    `assets/img/header-banner.png` (ese nombre exacto). Mientras no la subas,
    la app muestra un encabezado de respaldo con los colores de NagoScale.
-7. **Crear tu usuario administrador.** Visita
-   `https://inmueblespordias.nagoscale.com/setup.php` y crea tu usuario y
-   contraseña. Esa página se desactiva sola en cuanto exista un usuario, así
-   que solo funciona la primera vez.
+7. **Crear tu cuenta.** Visita
+   `https://inmueblespordias.nagoscale.com/register.php` y crea tu usuario y
+   contraseña. Cualquier persona puede registrarse ahí y empezar con sus
+   propios apartamentos, sin ver los de otros usuarios.
 8. **Activar HTTPS.** En hPanel: *Seguridad → SSL*, activa el certificado
    gratuito para el subdominio.
 9. Entra en `https://inmueblespordias.nagoscale.com/login.php` con el usuario
@@ -48,7 +51,8 @@ funcionar en hosting compartido con cPanel, como **Hostinger**.
 - `reserva_form.php` — crear/editar una reserva (calcula 75%/25%
   automáticamente).
 - `apartamentos.php` / `apartamento_form.php` — gestión de apartamentos.
-- `login.php` / `setup.php` / `logout.php` — acceso con usuario y contraseña.
+- `login.php` / `register.php` / `logout.php` — acceso con usuario y
+  contraseña; cualquiera puede crear su propia cuenta y solo ve sus datos.
 - `includes/` — conexión a BD, autenticación, CSRF y layout (bloqueado al
   acceso directo por HTTP vía `.htaccess`).
 - `db/schema.sql` — esquema de la base de datos.

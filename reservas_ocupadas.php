@@ -13,6 +13,13 @@ if ($apartamentoId <= 0) {
     exit;
 }
 
+$stmt = $pdo->prepare('SELECT COUNT(*) FROM apartamentos WHERE id = ? AND user_id = ?');
+$stmt->execute([$apartamentoId, current_user_id()]);
+if ((int) $stmt->fetchColumn() === 0) {
+    echo json_encode([]);
+    exit;
+}
+
 $sql = 'SELECT fecha_inicio, fecha_fin FROM reservas WHERE apartamento_id = ?';
 $params = [$apartamentoId];
 if ($excluirId > 0) {

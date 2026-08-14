@@ -14,8 +14,8 @@ $apartamento = ['nombre' => '', 'propietario' => '', 'direccion' => ''];
 $fotos = [];
 
 if ($id) {
-    $stmt = $pdo->prepare('SELECT * FROM apartamentos WHERE id = ?');
-    $stmt->execute([$id]);
+    $stmt = $pdo->prepare('SELECT * FROM apartamentos WHERE id = ? AND user_id = ?');
+    $stmt->execute([$id, current_user_id()]);
     $found = $stmt->fetch();
     if (!$found) {
         http_response_code(404);
@@ -43,12 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'El nombre del apartamento es obligatorio.';
     } else {
         if ($id) {
-            $stmt = $pdo->prepare('UPDATE apartamentos SET nombre = ?, propietario = ?, direccion = ? WHERE id = ?');
-            $stmt->execute([$nombre, $propietario ?: null, $direccion ?: null, $id]);
+            $stmt = $pdo->prepare('UPDATE apartamentos SET nombre = ?, propietario = ?, direccion = ? WHERE id = ? AND user_id = ?');
+            $stmt->execute([$nombre, $propietario ?: null, $direccion ?: null, $id, current_user_id()]);
             $apartamentoId = $id;
         } else {
-            $stmt = $pdo->prepare('INSERT INTO apartamentos (nombre, propietario, direccion) VALUES (?, ?, ?)');
-            $stmt->execute([$nombre, $propietario ?: null, $direccion ?: null]);
+            $stmt = $pdo->prepare('INSERT INTO apartamentos (user_id, nombre, propietario, direccion) VALUES (?, ?, ?, ?)');
+            $stmt->execute([current_user_id(), $nombre, $propietario ?: null, $direccion ?: null]);
             $apartamentoId = (int) $pdo->lastInsertId();
         }
 

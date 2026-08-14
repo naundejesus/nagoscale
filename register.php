@@ -2,10 +2,8 @@
 declare(strict_types=1);
 require __DIR__ . '/includes/bootstrap.php';
 
-// Esta página solo funciona mientras no exista ningún usuario. Una vez
-// creado el primer administrador, se desactiva automáticamente.
-if (user_count($pdo) > 0) {
-    header('Location: login.php');
+if (current_user_id()) {
+    header('Location: reservas.php');
     exit;
 }
 
@@ -24,10 +22,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $password2) {
         $error = 'Las contraseñas no coinciden.';
     } else {
-        $stmt = $pdo->prepare('INSERT INTO users (username, password_hash) VALUES (?, ?)');
-        $stmt->execute([$username, password_hash($password, PASSWORD_DEFAULT)]);
-        header('Location: login.php?creado=1');
-        exit;
+        $stmt = $pdo->prepare('SELECT id FROM users WHERE username = ?');
+        $stmt->execute([$username]);
+        if ($stmt->fetch()) {
+            $error = 'Ese usuario ya existe, elige otro.';
+        } else {
+            $stmt = $pdo->prepare('INSERT INTO users (username, password_hash) VALUES (?, ?)');
+            $stmt->execute([$username, password_hash($password, PASSWORD_DEFAULT)]);
+            $userId = (int) $pdo->lastInsertId();
+
+            session_regenerate_id(true);
+            $_SESSION['user_id'] = $userId;
+            $_SESSION['username'] = $username;
+            header('Location: reservas.php?bienvenida=1');
+            exit;
+        }
     }
 }
 ?>
@@ -36,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Crear administrador · NagoScale</title>
+<title>Crear cuenta · NagoScale</title>
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -44,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php require __DIR__ . '/includes/banner.php'; ?>
 <div class="auth-wrap">
   <form class="auth-card" method="post" novalidate>
-    <h1>Crear cuenta de administrador</h1>
-    <p class="auth-subtitle">Primer ingreso: crea el usuario que usarás para entrar al sistema.</p>
+    <h1>Crear cuenta nueva</h1>
+    <p class="auth-subtitle">Empieza desde cero con tus propios apartamentos y reservas.</p>
     <?php if ($error): ?><p class="alert alert-error"><?= e($error) ?></p><?php endif; ?>
     <?= csrf_field() ?>
     <label>Usuario
@@ -58,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <input type="password" name="password2" required minlength="8">
     </label>
     <button type="submit" class="btn btn-primary">Crear cuenta</button>
+    <p class="auth-subtitle">¿Ya tienes cuenta? <a href="login.php">Inicia sesión</a></p>
   </form>
 </div>
 </body>

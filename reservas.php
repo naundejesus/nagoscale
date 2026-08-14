@@ -3,7 +3,9 @@ declare(strict_types=1);
 require __DIR__ . '/includes/bootstrap.php';
 require_login();
 
-$apartamentos = $pdo->query('SELECT id, nombre FROM apartamentos ORDER BY nombre')->fetchAll();
+$stmt = $pdo->prepare('SELECT id, nombre FROM apartamentos WHERE user_id = ? ORDER BY nombre');
+$stmt->execute([current_user_id()]);
+$apartamentos = $stmt->fetchAll();
 
 $filtro = obtener_reservas_filtradas($pdo);
 $desde = $filtro['desde'];

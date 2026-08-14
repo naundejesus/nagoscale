@@ -3,14 +3,17 @@ declare(strict_types=1);
 require __DIR__ . '/includes/bootstrap.php';
 require_login();
 
-$apartamentos = $pdo->query(
+$stmt = $pdo->prepare(
     'SELECT a.*,
             (SELECT COUNT(*) FROM reservas r WHERE r.apartamento_id = a.id) AS total_reservas,
             (SELECT COALESCE(SUM(r.valor_total), 0) FROM reservas r WHERE r.apartamento_id = a.id) AS total_valor,
             (SELECT archivo FROM apartamento_fotos f WHERE f.apartamento_id = a.id ORDER BY f.id LIMIT 1) AS foto_portada
      FROM apartamentos a
+     WHERE a.user_id = ?
      ORDER BY a.nombre'
-)->fetchAll();
+);
+$stmt->execute([current_user_id()]);
+$apartamentos = $stmt->fetchAll();
 
 $pageTitle = 'Apartamentos';
 require __DIR__ . '/includes/header.php';

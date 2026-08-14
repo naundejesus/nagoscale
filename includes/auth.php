@@ -13,8 +13,3 @@ function require_login(): void
         exit;
     }
 }
-
-function user_count(PDO $pdo): int
-{
-    return (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
-}

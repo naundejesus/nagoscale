@@ -20,8 +20,12 @@ $reserva = [
 ];
 
 if ($id) {
-    $stmt = $pdo->prepare('SELECT * FROM reservas WHERE id = ?');
-    $stmt->execute([$id]);
+    $stmt = $pdo->prepare(
+        'SELECT r.* FROM reservas r
+         JOIN apartamentos a ON a.id = r.apartamento_id
+         WHERE r.id = ? AND a.user_id = ?'
+    );
+    $stmt->execute([$id, current_user_id()]);
     $found = $stmt->fetch();
     if (!$found) {
         http_response_code(404);
@@ -43,8 +47,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $valorTotal = (float) ($_POST['valor_total'] ?? 0);
     $notas = trim((string) ($_POST['notas'] ?? ''));
 
+    $apartamentoPropio = false;
+    if ($apartamentoId > 0) {
+        $stmt = $pdo->prepare('SELECT COUNT(*) FROM apartamentos WHERE id = ? AND user_id = ?');
+        $stmt->execute([$apartamentoId, current_user_id()]);
+        $apartamentoPropio = (int) $stmt->fetchColumn() > 0;
+    }
+
     if ($apartamentoId <= 0) {
         $error = 'Selecciona un apartamento.';
+    } elseif (!$apartamentoPropio) {
+        $error = 'Apartamento no válido.';
     } elseif (DateTime::createFromFormat('Y-m-d', $fechaInicio) === false) {
         $error = 'La fecha de inicio no es válida.';
     } elseif (DateTime::createFromFormat('Y-m-d', $fechaFin) === false) {
@@ -102,7 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 }
 
-$apartamentos = $pdo->query('SELECT id, nombre FROM apartamentos ORDER BY nombre')->fetchAll();
+$stmt = $pdo->prepare('SELECT id, nombre FROM apartamentos WHERE user_id = ? ORDER BY nombre');
+$stmt->execute([current_user_id()]);
+$apartamentos = $stmt->fetchAll();
 
 $pageTitle = $id ? 'Editar reserva' : 'Nueva reserva';
 require __DIR__ . '/includes/header.php';

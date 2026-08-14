@@ -7,11 +7,6 @@ if (current_user_id()) {
     exit;
 }
 
-if (user_count($pdo) === 0) {
-    header('Location: setup.php');
-    exit;
-}
-
 $error = '';
 $creado = isset($_GET['creado']);
 
@@ -59,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <input type="password" name="password" required>
     </label>
     <button type="submit" class="btn btn-primary">Entrar</button>
+    <p class="auth-subtitle">¿No tienes cuenta? <a href="register.php">Regístrate</a></p>
   </form>
 </div>
 </body>
