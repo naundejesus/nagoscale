@@ -11,6 +11,12 @@ function formatCOP($value): string
     return '$ ' . number_format((float) $value, 0, ',', '.');
 }
 
+function asset_version(): string
+{
+    $ruta = __DIR__ . '/../assets/css/style.css';
+    return (string) (@filemtime($ruta) ?: time());
+}
+
 function plataformaLabel(string $plataforma): string
 {
     $labels = [

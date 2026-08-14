@@ -93,7 +93,7 @@ $pageTitle = 'Todos los alojamientos disponibles';
 <title><?= e($pageTitle) ?> · NagoScale</title>
 <meta name="description" content="Explora todos los apartamentos disponibles en NagoScale, de todos nuestros propietarios.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css?v=<?= e(asset_version()) ?>">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body class="ne-body">

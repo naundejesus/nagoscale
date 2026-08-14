@@ -139,7 +139,7 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
 <title><?= e($apartamento['nombre']) ?> · NagoScale</title>
 <meta name="description" content="<?= e(mb_substr((string) ($apartamento['descripcion'] ?? $apartamento['nombre']), 0, 155)) ?>">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css?v=<?= e(asset_version()) ?>">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body class="ne-body">

@@ -16,7 +16,7 @@ $totales = $filtro['totales'];
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reporte de reservas · NagoScale</title>
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css?v=<?= e(asset_version()) ?>">
 <style>
   body { background: #fff; }
   .print-actions { margin: 20px; }
