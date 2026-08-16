@@ -24,7 +24,7 @@ function enviar_notificacion_solicitud(string $emailDestino, array $datos): void
     $cuerpo .= APP_URL . "/solicitudes.php\n";
 
     $dominio = parse_url(APP_URL, PHP_URL_HOST) ?: 'localhost';
-    $headers = "From: NagoScale <no-reply@{$dominio}>\r\n";
+    $headers = "From: " . brand_name() . " <no-reply@{$dominio}>\r\n";
     $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
     // Best-effort: en hosting compartido mail() no siempre está garantizado,

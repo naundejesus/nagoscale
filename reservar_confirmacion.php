@@ -30,9 +30,10 @@ $pageTitle = 'Solicitud enviada';
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?= e($pageTitle) ?> · NagoScale</title>
+<title><?= e($pageTitle) ?> · <?= e(brand_name()) ?></title>
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="stylesheet" href="assets/css/style.css?v=<?= e(asset_version()) ?>">
+<?php require __DIR__ . '/includes/brand_style.php'; ?>
 </head>
 <body class="ne-body">
 <?php require __DIR__ . '/includes/ne_header.php'; ?>
@@ -64,7 +65,7 @@ $pageTitle = 'Solicitud enviada';
     </div>
 
     <div class="ne-confirm-actions">
-      <a href="reservar.php?u=<?= (int) $solicitud['user_id'] ?>" class="btn btn-primary">Volver a NagoScale</a>
+      <a href="reservar.php?u=<?= (int) $solicitud['user_id'] ?>" class="btn btn-primary">Volver a <?= e(brand_name()) ?></a>
     </div>
   </div>
 </div>

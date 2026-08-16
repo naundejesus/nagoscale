@@ -1,6 +1,6 @@
 </main>
 <footer class="site-footer">
-  <p>NagoScale · Inmuebles por Días</p>
+  <p><?= e(brand_name()) ?> · <?= e(brand_tagline()) ?></p>
 </footer>
 </body>
 </html>

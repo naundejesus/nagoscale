@@ -17,6 +17,26 @@ function asset_version(): string
     return (string) (@filemtime($ruta) ?: time());
 }
 
+function brand_name(): string
+{
+    return defined('BRAND_NAME') ? BRAND_NAME : 'NagoScale';
+}
+
+function brand_tagline(): string
+{
+    return defined('BRAND_TAGLINE') ? BRAND_TAGLINE : 'Inmuebles por Días';
+}
+
+function brand_primary_color(): string
+{
+    return defined('BRAND_PRIMARY_COLOR') ? BRAND_PRIMARY_COLOR : '#0E57E1';
+}
+
+function brand_dark_color(): string
+{
+    return defined('BRAND_DARK_COLOR') ? BRAND_DARK_COLOR : '#131E41';
+}
+
 function plataformaLabel(string $plataforma): string
 {
     $labels = [

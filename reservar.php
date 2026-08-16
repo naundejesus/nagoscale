@@ -104,11 +104,12 @@ $pageTitle = 'Alojamientos disponibles';
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?= e($pageTitle) ?> · NagoScale</title>
+<title><?= e($pageTitle) ?> · <?= e(brand_name()) ?></title>
 <meta name="description" content="Encuentra y reserva apartamentos por días, seleccionados y verificados.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="stylesheet" href="assets/css/style.css?v=<?= e(asset_version()) ?>">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<?php require __DIR__ . '/includes/brand_style.php'; ?>
 </head>
 <body class="ne-body">
 <?php require __DIR__ . '/includes/ne_header.php'; ?>

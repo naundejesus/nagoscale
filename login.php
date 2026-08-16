@@ -34,9 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Iniciar sesión · NagoScale</title>
+<title>Iniciar sesión · <?= e(brand_name()) ?></title>
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="stylesheet" href="assets/css/style.css?v=<?= e(asset_version()) ?>">
+<?php require __DIR__ . '/includes/brand_style.php'; ?>
 </head>
 <body class="auth-body">
 <?php require __DIR__ . '/includes/banner.php'; ?>

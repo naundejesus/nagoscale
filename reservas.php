@@ -88,7 +88,7 @@ require __DIR__ . '/includes/header.php';
     <span class="summary-value"><?= formatCOP($totales['propietario']) ?></span>
   </div>
   <div class="summary-card summary-card-commission">
-    <span class="summary-label">25% NagoScale</span>
+    <span class="summary-label">25% <?= e(brand_name()) ?></span>
     <span class="summary-value"><?= formatCOP($totales['comision']) ?></span>
   </div>
 </div>
@@ -104,7 +104,7 @@ require __DIR__ . '/includes/header.php';
       <th>Plataforma</th>
       <th>Valor total</th>
       <th>75% Propietario</th>
-      <th>25% NagoScale</th>
+      <th>25% <?= e(brand_name()) ?></th>
       <th>Notas</th>
       <th></th>
     </tr>

@@ -8,17 +8,17 @@ $bannerExists = file_exists($bannerPath);
   <?php if ($bannerExists): ?>
     <img
       src="assets/img/header-banner.png?v=<?= (int) filemtime($bannerPath) ?>"
-      alt="NagoScale - Inmuebles por días"
+      alt="<?= e(brand_name()) ?> - <?= e(brand_tagline()) ?>"
       class="brand-banner-img"
     >
   <?php else: ?>
     <div class="brand-banner-fallback">
       <div class="brand-logo">
-        <span class="brand-mark">N</span>
-        <span class="brand-name">Nago<strong>Scale</strong></span>
+        <span class="brand-mark"><?= e(mb_substr(brand_name(), 0, 1)) ?></span>
+        <span class="brand-name"><?= e(brand_name()) ?></span>
       </div>
       <p class="brand-tagline">
-        ESCALAMOS NEGOCIOS CON <strong>TECNOLOGÍA, PUBLICIDAD E INTELIGENCIA ARTIFICIAL</strong>
+        <?= e(brand_tagline()) ?>
       </p>
       <p class="brand-hint">
         Sube tu imagen de banner a <code>assets/img/header-banner.png</code> para reemplazar este encabezado.

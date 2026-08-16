@@ -14,9 +14,10 @@ $totales = $filtro['totales'];
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reporte de reservas · NagoScale</title>
+<title>Reporte de reservas · <?= e(brand_name()) ?></title>
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="stylesheet" href="assets/css/style.css?v=<?= e(asset_version()) ?>">
+<?php require __DIR__ . '/includes/brand_style.php'; ?>
 <style>
   body { background: #fff; }
   .print-actions { margin: 20px; }
@@ -35,7 +36,7 @@ $totales = $filtro['totales'];
 </div>
 
 <div class="print-header">
-  <h1>Reporte de reservas — NagoScale</h1>
+  <h1>Reporte de reservas — <?= e(brand_name()) ?></h1>
   <p>
     Generado el <?= e((new DateTime())->format('d/m/Y H:i')) ?>
     <?php if ($desde || $hasta): ?>
@@ -59,7 +60,7 @@ $totales = $filtro['totales'];
       <span class="summary-value"><?= formatCOP($totales['propietario']) ?></span>
     </div>
     <div class="summary-card summary-card-commission">
-      <span class="summary-label">25% NagoScale</span>
+      <span class="summary-label">25% <?= e(brand_name()) ?></span>
       <span class="summary-value"><?= formatCOP($totales['comision']) ?></span>
     </div>
   </div>
@@ -75,7 +76,7 @@ $totales = $filtro['totales'];
         <th>Plataforma</th>
         <th>Valor total</th>
         <th>75% Propietario</th>
-        <th>25% NagoScale</th>
+        <th>25% <?= e(brand_name()) ?></th>
         <th>Notas</th>
       </tr>
     </thead>

@@ -14,7 +14,7 @@ echo "\xEF\xBB\xBF"; // BOM para que Excel reconozca UTF-8 correctamente
 
 $salida = fopen('php://output', 'w');
 
-fputcsv($salida, ['Check-in', 'Check-out', 'Apartamento', 'Propietario', 'Plataforma', 'Valor total', '75% Propietario', '25% NagoScale', 'Notas'], ';');
+fputcsv($salida, ['Check-in', 'Check-out', 'Apartamento', 'Propietario', 'Plataforma', 'Valor total', '75% Propietario', '25% ' . brand_name(), 'Notas'], ';');
 
 foreach ($reservas as $r) {
     fputcsv($salida, [

@@ -178,7 +178,7 @@ require __DIR__ . '/includes/header.php';
 
   <div class="split-preview">
     <div>75% Propietario <strong id="preview_propietario">$ 0</strong></div>
-    <div>25% NagoScale <strong id="preview_comision">$ 0</strong></div>
+    <div>25% <?= e(brand_name()) ?> <strong id="preview_comision">$ 0</strong></div>
   </div>
 
   <label>Notas (opcional)
