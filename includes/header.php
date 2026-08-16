@@ -32,6 +32,7 @@ $solicitudesPendientes = (int) $stmt->fetchColumn();
         Solicitudes
         <?php if ($solicitudesPendientes > 0): ?><span class="nav-badge"><?= $solicitudesPendientes ?></span><?php endif; ?>
       </a>
+      <a href="checkin.php"<?= in_array(basename($_SERVER['PHP_SELF']), ['checkin.php', 'checkin_form.php'], true) ? ' class="active"' : '' ?>>Check-in</a>
     </div>
     <div class="main-nav-user">
       <span>Hola, <?= e($_SESSION['username'] ?? '') ?></span>
