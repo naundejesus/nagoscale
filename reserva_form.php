@@ -55,9 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($apartamentoId <= 0) {
-        $error = 'Selecciona un apartamento.';
+        $error = 'Selecciona un alojamiento.';
     } elseif (!$apartamentoPropio) {
-        $error = 'Apartamento no válido.';
+        $error = 'Alojamiento no válido.';
     } elseif (DateTime::createFromFormat('Y-m-d', $fechaInicio) === false) {
         $error = 'La fecha de inicio no es válida.';
     } elseif (DateTime::createFromFormat('Y-m-d', $fechaFin) === false) {
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare($sqlSolape);
         $stmt->execute($paramsSolape);
         if ((int) $stmt->fetchColumn() > 0) {
-            $error = 'Ese apartamento ya tiene una reserva que se cruza con las fechas seleccionadas.';
+            $error = 'Ese alojamiento ya tiene una reserva que se cruza con las fechas seleccionadas.';
         }
     }
 
@@ -130,7 +130,7 @@ require __DIR__ . '/includes/header.php';
 
 <?php if (!$apartamentos): ?>
   <p class="alert alert-error">
-    Primero debes <a href="apartamento_form.php">crear al menos un apartamento</a> antes de registrar reservas.
+    Primero debes <a href="apartamento_form.php">crear al menos un alojamiento</a> antes de registrar reservas.
   </p>
 <?php else: ?>
 
@@ -140,7 +140,7 @@ require __DIR__ . '/includes/header.php';
   <?= csrf_field() ?>
   <?php if ($id): ?><input type="hidden" name="id" value="<?= (int) $id ?>"><?php endif; ?>
 
-  <label>Apartamento
+  <label>Alojamiento
     <select name="apartamento_id" required>
       <option value="">Selecciona...</option>
       <?php foreach ($apartamentos as $a): ?>
@@ -160,7 +160,7 @@ require __DIR__ . '/includes/header.php';
   </label>
 
   <div class="calendario-wrap">
-    <span class="calendario-titulo">Disponibilidad de este apartamento</span>
+    <span class="calendario-titulo">Disponibilidad de este alojamiento</span>
     <div id="calendario" data-excluir-id="<?= $id ? (int) $id : '' ?>"></div>
   </div>
 

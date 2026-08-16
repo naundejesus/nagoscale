@@ -10,7 +10,7 @@ function enviar_notificacion_solicitud(string $emailDestino, array $datos): void
     $asunto = 'Nueva solicitud de reserva - ' . $datos['apartamento_nombre'];
 
     $cuerpo = "Tienes una nueva solicitud de reserva:\n\n";
-    $cuerpo .= "Apartamento: {$datos['apartamento_nombre']}\n";
+    $cuerpo .= "Alojamiento: {$datos['apartamento_nombre']}\n";
     $cuerpo .= "Cliente: {$datos['nombre_cliente']}\n";
     $cuerpo .= "Teléfono: {$datos['telefono']}\n";
     if (!empty($datos['correo'])) {

@@ -71,7 +71,7 @@ $totales = $filtro['totales'];
       <tr>
         <th>Check-in</th>
         <th>Check-out</th>
-        <th>Apartamento</th>
+        <th>Alojamiento</th>
         <th>Propietario</th>
         <th>Plataforma</th>
         <th>Valor total</th>

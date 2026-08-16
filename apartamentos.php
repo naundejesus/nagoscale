@@ -15,17 +15,17 @@ $stmt = $pdo->prepare(
 $stmt->execute([current_user_id()]);
 $apartamentos = $stmt->fetchAll();
 
-$pageTitle = 'Apartamentos';
+$pageTitle = 'Alojamientos';
 require __DIR__ . '/includes/header.php';
 ?>
 
 <div class="page-head">
-  <h1>Apartamentos</h1>
-  <a href="apartamento_form.php" class="btn btn-primary">+ Nuevo apartamento</a>
+  <h1>Alojamientos</h1>
+  <a href="apartamento_form.php" class="btn btn-primary">+ Nuevo alojamiento</a>
 </div>
 
 <?php if (isset($_GET['guardado'])): ?>
-  <p class="alert alert-success">Apartamento guardado correctamente.</p>
+  <p class="alert alert-success">Alojamiento guardado correctamente.</p>
 <?php endif; ?>
 <?php if (isset($_GET['error'])): ?>
   <p class="alert alert-error"><?= e($_GET['error']) ?></p>
@@ -47,7 +47,7 @@ require __DIR__ . '/includes/header.php';
   </thead>
   <tbody>
     <?php if (!$apartamentos): ?>
-      <tr><td colspan="8" class="empty-state">Aún no has registrado apartamentos.</td></tr>
+      <tr><td colspan="8" class="empty-state">Aún no has registrado alojamientos.</td></tr>
     <?php endif; ?>
     <?php foreach ($apartamentos as $a): ?>
       <tr>
@@ -82,7 +82,7 @@ require __DIR__ . '/includes/header.php';
         <td><?= formatCOP($a['total_valor']) ?></td>
         <td class="actions-cell">
           <a href="apartamento_form.php?id=<?= (int) $a['id'] ?>" class="btn-link">Editar</a>
-          <form method="post" action="apartamento_delete.php" onsubmit="return confirm('¿Eliminar este apartamento?');" class="inline-form">
+          <form method="post" action="apartamento_delete.php" onsubmit="return confirm('¿Eliminar este alojamiento?');" class="inline-form">
             <?= csrf_field() ?>
             <input type="hidden" name="id" value="<?= (int) $a['id'] ?>">
             <button type="submit" class="btn-link btn-link-danger">Eliminar</button>

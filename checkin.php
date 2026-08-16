@@ -40,7 +40,7 @@ require __DIR__ . '/includes/header.php';
   <label>Hasta
     <input type="date" name="hasta" value="<?= e($hasta) ?>">
   </label>
-  <label>Apartamento
+  <label>Alojamiento
     <select name="apartamento_id">
       <option value="">Todos</option>
       <?php foreach ($apartamentos as $a): ?>
@@ -62,7 +62,7 @@ require __DIR__ . '/includes/header.php';
     <tr>
       <th>Check-in</th>
       <th>Check-out</th>
-      <th>Apartamento</th>
+      <th>Alojamiento</th>
       <th>Huéspedes registrados</th>
       <th></th>
     </tr>

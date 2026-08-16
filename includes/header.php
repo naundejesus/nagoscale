@@ -27,7 +27,7 @@ $solicitudesPendientes = (int) $stmt->fetchColumn();
   <nav class="main-nav">
     <div class="main-nav-links">
       <a href="reservas.php"<?= basename($_SERVER['PHP_SELF']) === 'reservas.php' || basename($_SERVER['PHP_SELF']) === 'reserva_form.php' || basename($_SERVER['PHP_SELF']) === 'index.php' ? ' class="active"' : '' ?>>Reservas</a>
-      <a href="apartamentos.php"<?= basename($_SERVER['PHP_SELF']) === 'apartamentos.php' || basename($_SERVER['PHP_SELF']) === 'apartamento_form.php' ? ' class="active"' : '' ?>>Apartamentos</a>
+      <a href="apartamentos.php"<?= basename($_SERVER['PHP_SELF']) === 'apartamentos.php' || basename($_SERVER['PHP_SELF']) === 'apartamento_form.php' ? ' class="active"' : '' ?>>Alojamientos</a>
       <a href="solicitudes.php"<?= in_array(basename($_SERVER['PHP_SELF']), ['solicitudes.php', 'solicitud_aprobar.php'], true) ? ' class="active"' : '' ?>>
         Solicitudes
         <?php if ($solicitudesPendientes > 0): ?><span class="nav-badge"><?= $solicitudesPendientes ?></span><?php endif; ?>

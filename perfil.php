@@ -71,7 +71,7 @@ require __DIR__ . '/includes/header.php';
   <label>Correo electrónico (para notificarte de nuevas solicitudes)
     <input type="email" name="email" value="<?= e($usuario['email'] ?? '') ?>" required>
   </label>
-  <label>WhatsApp de contacto (se muestra a tus clientes en la página de cada apartamento)
+  <label>WhatsApp de contacto (se muestra a tus clientes en la página de cada alojamiento)
     <input type="text" name="whatsapp" value="<?= e($usuario['whatsapp'] ?? '') ?>" placeholder="300 000 0000">
   </label>
 
@@ -108,7 +108,7 @@ require __DIR__ . '/includes/header.php';
   <span style="font-size:13px; color:var(--text-muted); font-weight:600;">Tu link público para clientes</span>
   <p style="font-size:14px; word-break:break-all; margin:8px 0;"><?= e($linkPublico) ?></p>
   <p style="font-size:12px; color:var(--text-muted); margin:0;">
-    Compártelo con tus clientes: verán tus apartamentos disponibles y podrán solicitar una reserva directamente.
+    Compártelo con tus clientes: verán tus alojamientos disponibles y podrán solicitar una reserva directamente.
   </p>
 </div>
 

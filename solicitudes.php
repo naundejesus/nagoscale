@@ -36,7 +36,7 @@ require __DIR__ . '/includes/header.php';
   <thead>
     <tr>
       <th>Estado</th>
-      <th>Apartamento</th>
+      <th>Alojamiento</th>
       <th>Cliente</th>
       <th>Contacto</th>
       <th>Fechas solicitadas</th>

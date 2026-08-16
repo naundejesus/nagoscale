@@ -93,7 +93,7 @@ require __DIR__ . '/includes/header.php';
 <?php if ($error): ?><p class="alert alert-error"><?= e($error) ?></p><?php endif; ?>
 
 <div class="form-card">
-  <p><strong>Apartamento:</strong> <?= e($solicitud['apartamento_nombre']) ?></p>
+  <p><strong>Alojamiento:</strong> <?= e($solicitud['apartamento_nombre']) ?></p>
   <p><strong>Cliente:</strong> <?= e($solicitud['nombre_cliente']) ?> — <?= e($solicitud['telefono']) ?></p>
   <?php if ($solicitud['correo']): ?><p><strong>Correo:</strong> <?= e($solicitud['correo']) ?></p><?php endif; ?>
   <p>

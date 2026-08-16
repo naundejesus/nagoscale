@@ -38,7 +38,7 @@ if ($id) {
     $found = $stmt->fetch();
     if (!$found) {
         http_response_code(404);
-        die('Apartamento no encontrado.');
+        die('Alojamiento no encontrado.');
     }
     $apartamento = $found;
     $amenidadesSeleccionadas = decodificar_amenidades($found['amenidades'] ?? null);
@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $amenidadesJson = $amenidadesSeleccionadas ? json_encode(array_values($amenidadesSeleccionadas)) : null;
 
     if ($nombre === '') {
-        $error = 'El nombre del apartamento es obligatorio.';
+        $error = 'El nombre del alojamiento es obligatorio.';
     } else {
         if ($id) {
             $stmt = $pdo->prepare(
@@ -216,13 +216,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 }
 
-$pageTitle = $id ? 'Editar apartamento' : 'Nuevo apartamento';
+$pageTitle = $id ? 'Editar alojamiento' : 'Nuevo alojamiento';
 require __DIR__ . '/includes/header.php';
 ?>
 
 <div class="page-head">
-  <h1><?= $id ? 'Editar apartamento' : 'Nuevo apartamento' ?></h1>
-  <a href="apartamentos.php" class="btn-link">&larr; Volver a apartamentos</a>
+  <h1><?= $id ? 'Editar alojamiento' : 'Nuevo alojamiento' ?></h1>
+  <a href="apartamentos.php" class="btn-link">&larr; Volver a alojamientos</a>
 </div>
 
 <?php if ($error): ?><p class="alert alert-error"><?= e($error) ?></p><?php endif; ?>
@@ -231,7 +231,7 @@ require __DIR__ . '/includes/header.php';
   <?= csrf_field() ?>
   <?php if ($id): ?><input type="hidden" name="id" value="<?= (int) $id ?>"><?php endif; ?>
 
-  <label>Nombre del apartamento
+  <label>Nombre del alojamiento
     <input type="text" name="nombre" value="<?= e($apartamento['nombre']) ?>" required autofocus>
   </label>
 
@@ -296,7 +296,7 @@ require __DIR__ . '/includes/header.php';
   <div>
     <span style="display:block; font-size:13px; color:var(--text-secondary); font-weight:600; margin-bottom:8px;">Ubicación en el mapa (opcional)</span>
     <div id="mapa-picker" style="height:240px; border-radius:8px; border:1px solid var(--border);"></div>
-    <p class="cal-hint">Haz clic en el mapa para marcar la ubicación exacta del apartamento.</p>
+    <p class="cal-hint">Haz clic en el mapa para marcar la ubicación exacta del alojamiento.</p>
     <input type="hidden" name="latitud" id="input-latitud" value="<?= e($apartamento['latitud'] ?? '') ?>">
     <input type="hidden" name="longitud" id="input-longitud" value="<?= e($apartamento['longitud'] ?? '') ?>">
   </div>
@@ -309,7 +309,7 @@ require __DIR__ . '/includes/header.php';
       <div class="photo-grid">
         <?php foreach ($fotos as $foto): ?>
           <label class="photo-thumb">
-            <img src="assets/uploads/apartamentos/<?= e($foto['archivo']) ?>" alt="Foto del apartamento">
+            <img src="assets/uploads/apartamentos/<?= e($foto['archivo']) ?>" alt="Foto del alojamiento">
             <span>
               <label style="display:inline-flex; align-items:center; gap:4px; font-weight:600;">
                 <input type="radio" name="foto_principal" value="<?= (int) $foto['id'] ?>" <?= $foto['es_principal'] ? 'checked' : '' ?>>
@@ -327,7 +327,7 @@ require __DIR__ . '/includes/header.php';
     <input type="file" name="fotos[]" accept="image/png,image/jpeg,image/webp" multiple>
   </label>
 
-  <button type="submit" class="btn btn-primary">Guardar apartamento</button>
+  <button type="submit" class="btn btn-primary">Guardar alojamiento</button>
 </form>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -354,7 +354,7 @@ require __DIR__ . '/includes/header.php';
 <?php if ($id): ?>
 <div class="form-card" style="max-width:640px; margin-top:20px;">
   <h2 style="font-size:16px;">Reseñas de clientes</h2>
-  <p class="cal-hint">Como los clientes reservan sin crear cuenta, tú puedes cargar aquí las reseñas que te compartan (por WhatsApp, Airbnb, etc.) para que se vean en la ficha pública del apartamento.</p>
+  <p class="cal-hint">Como los clientes reservan sin crear cuenta, tú puedes cargar aquí las reseñas que te compartan (por WhatsApp, Airbnb, etc.) para que se vean en la ficha pública del alojamiento.</p>
 
   <?php if ($resenas): ?>
     <div style="display:flex; flex-direction:column; gap:10px;">
