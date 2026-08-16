@@ -37,6 +37,21 @@ function brand_dark_color(): string
     return defined('BRAND_DARK_COLOR') ? BRAND_DARK_COLOR : '#131E41';
 }
 
+function brand_darken(string $hex, float $percent = 0.2): string
+{
+    $hex = ltrim($hex, '#');
+    if (strlen($hex) === 3) {
+        $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+    }
+    if (strlen($hex) !== 6 || !ctype_xdigit($hex)) {
+        return '#' . $hex;
+    }
+    $r = (int) round(hexdec(substr($hex, 0, 2)) * (1 - $percent));
+    $g = (int) round(hexdec(substr($hex, 2, 2)) * (1 - $percent));
+    $b = (int) round(hexdec(substr($hex, 4, 2)) * (1 - $percent));
+    return sprintf('#%02x%02x%02x', max(0, $r), max(0, $g), max(0, $b));
+}
+
 function plataformaLabel(string $plataforma): string
 {
     $labels = [
