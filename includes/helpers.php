@@ -52,6 +52,19 @@ function brand_darken(string $hex, float $percent = 0.2): string
     return sprintf('#%02x%02x%02x', max(0, $r), max(0, $g), max(0, $b));
 }
 
+function whatsapp_link(string $numero, string $mensaje = ''): string
+{
+    $digitos = preg_replace('/\D+/', '', $numero) ?? '';
+    if ($digitos !== '' && strlen($digitos) === 10) {
+        $digitos = '57' . $digitos; // celular colombiano sin indicativo de país
+    }
+    $url = 'https://wa.me/' . $digitos;
+    if ($mensaje !== '') {
+        $url .= '?text=' . rawurlencode($mensaje);
+    }
+    return $url;
+}
+
 function plataformaLabel(string $plataforma): string
 {
     $labels = [

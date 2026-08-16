@@ -13,6 +13,7 @@ $guardado = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
     $email = trim($_POST['email'] ?? '');
+    $whatsapp = trim($_POST['whatsapp'] ?? '');
     $nequiNumero = trim($_POST['nequi_numero'] ?? '');
     $bancolombiaTipoCuenta = trim($_POST['bancolombia_tipo_cuenta'] ?? '');
     $bancolombiaNumero = trim($_POST['bancolombia_numero'] ?? '');
@@ -23,11 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $stmt = $pdo->prepare(
             'UPDATE users
-             SET email = ?, nequi_numero = ?, bancolombia_tipo_cuenta = ?, bancolombia_numero = ?, bancolombia_titular = ?
+             SET email = ?, whatsapp = ?, nequi_numero = ?, bancolombia_tipo_cuenta = ?, bancolombia_numero = ?, bancolombia_titular = ?
              WHERE id = ?'
         );
         $stmt->execute([
             $email,
+            $whatsapp ?: null,
             $nequiNumero ?: null,
             $bancolombiaTipoCuenta ?: null,
             $bancolombiaNumero ?: null,
@@ -36,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         $usuario = array_merge($usuario, [
             'email' => $email,
+            'whatsapp' => $whatsapp,
             'nequi_numero' => $nequiNumero,
             'bancolombia_tipo_cuenta' => $bancolombiaTipoCuenta,
             'bancolombia_numero' => $bancolombiaNumero,
@@ -67,6 +70,9 @@ require __DIR__ . '/includes/header.php';
   </label>
   <label>Correo electrónico (para notificarte de nuevas solicitudes)
     <input type="email" name="email" value="<?= e($usuario['email'] ?? '') ?>" required>
+  </label>
+  <label>WhatsApp de contacto (se muestra a tus clientes en la página de cada apartamento)
+    <input type="text" name="whatsapp" value="<?= e($usuario['whatsapp'] ?? '') ?>" placeholder="300 000 0000">
   </label>
 
   <hr style="border:none; border-top:1px solid var(--border); margin:0;">

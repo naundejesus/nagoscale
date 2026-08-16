@@ -20,7 +20,7 @@ $stmt = $pdo->prepare('SELECT archivo FROM apartamento_fotos WHERE apartamento_i
 $stmt->execute([$apartamentoId]);
 $fotos = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-$stmt = $pdo->prepare('SELECT nequi_numero, bancolombia_tipo_cuenta, bancolombia_numero, bancolombia_titular FROM users WHERE id = ?');
+$stmt = $pdo->prepare('SELECT whatsapp, nequi_numero, bancolombia_tipo_cuenta, bancolombia_numero, bancolombia_titular FROM users WHERE id = ?');
 $stmt->execute([$apartamento['user_id']]);
 $datosPago = $stmt->fetch();
 
@@ -343,6 +343,14 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
       <?php endif; ?>
       <a href="#reservar" class="btn btn-primary btn-block">Reservar ahora</a>
       <p style="font-size:12px; color:var(--text-secondary); text-align:center;">No se te cobrará todavía</p>
+      <?php if (!empty($datosPago['whatsapp'])): ?>
+        <a
+          href="<?= e(whatsapp_link($datosPago['whatsapp'], 'Hola, tengo una pregunta sobre ' . $apartamento['nombre'])) ?>"
+          class="btn btn-secondary btn-block"
+          target="_blank"
+          rel="noopener"
+        >💬 Contactar por WhatsApp</a>
+      <?php endif; ?>
     </aside>
   </div>
 </div>

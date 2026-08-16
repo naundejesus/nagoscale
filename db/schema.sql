@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(50) NOT NULL UNIQUE,
   email VARCHAR(120) NULL,
   password_hash VARCHAR(255) NOT NULL,
+  whatsapp VARCHAR(20) NULL,
   nequi_numero VARCHAR(20) NULL,
   bancolombia_tipo_cuenta VARCHAR(20) NULL,
   bancolombia_numero VARCHAR(30) NULL,
