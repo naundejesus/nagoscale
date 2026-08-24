@@ -163,8 +163,13 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
 
   <?php if ($fotos): ?>
     <div class="ne-gallery">
-      <div class="ne-gallery-main" onclick="document.getElementById('ne-lightbox').style.display='flex'" style="cursor:pointer;">
-        <img src="assets/uploads/apartamentos/<?= e($fotos[0]) ?>" alt="<?= e($apartamento['nombre']) ?>" id="ne-foto-principal">
+      <div class="ne-gallery-main">
+        <img src="assets/uploads/apartamentos/<?= e($fotos[0]) ?>" alt="<?= e($apartamento['nombre']) ?>" id="ne-foto-principal" onclick="document.getElementById('ne-lightbox').style.display='flex'" style="cursor:pointer;">
+        <?php if (count($fotos) > 1): ?>
+          <button type="button" class="ne-gallery-nav ne-gallery-nav-prev" onclick="neGaleriaFoto(-1)" aria-label="Foto anterior">‹</button>
+          <button type="button" class="ne-gallery-nav ne-gallery-nav-next" onclick="neGaleriaFoto(1)" aria-label="Foto siguiente">›</button>
+          <span class="ne-gallery-contador" id="ne-gallery-contador">1 / <?= count($fotos) ?></span>
+        <?php endif; ?>
       </div>
       <div class="ne-gallery-side">
         <?php for ($i = 1; $i <= 4; $i++): ?>
@@ -370,9 +375,22 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
 </div>
 <?php endif; ?>
 
-<?php if ($apartamento['precio_noche'] !== null): ?>
+<?php if ($apartamento['precio_noche'] !== null || !empty($datosPago['whatsapp'])): ?>
 <div class="ne-mobile-book-bar">
-  <span class="precio"><?= formatCOP($apartamento['precio_noche']) ?><span>/ noche</span></span>
+  <div class="ne-mobile-book-info">
+    <?php if ($apartamento['precio_noche'] !== null): ?>
+      <span class="precio"><?= formatCOP($apartamento['precio_noche']) ?><span>/ noche</span></span>
+    <?php endif; ?>
+    <?php if (!empty($datosPago['whatsapp'])): ?>
+      <a
+        href="<?= e(whatsapp_link($datosPago['whatsapp'], 'Hola, tengo una pregunta sobre ' . $apartamento['nombre'])) ?>"
+        class="ne-mobile-whatsapp"
+        target="_blank"
+        rel="noopener"
+        aria-label="Contactar por WhatsApp"
+      >💬</a>
+    <?php endif; ?>
+  </div>
   <a href="#reservar" class="btn btn-primary">Reservar</a>
 </div>
 <?php endif; ?>
@@ -380,6 +398,16 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="assets/js/calendario.js"></script>
 <script>
+  var neFotosGaleria = <?= json_encode(array_map(function ($f) { return 'assets/uploads/apartamentos/' . $f; }, $fotos)) ?>;
+  var neFotoActual = 0;
+  function neGaleriaFoto(direccion) {
+    if (!neFotosGaleria.length) return;
+    neFotoActual = (neFotoActual + direccion + neFotosGaleria.length) % neFotosGaleria.length;
+    document.getElementById('ne-foto-principal').src = neFotosGaleria[neFotoActual];
+    var contador = document.getElementById('ne-gallery-contador');
+    if (contador) { contador.textContent = (neFotoActual + 1) + ' / ' + neFotosGaleria.length; }
+  }
+
   (function () {
     var tarjetaReserva = document.getElementById('ne-booking-card');
     var seccionFormulario = document.getElementById('reservar');

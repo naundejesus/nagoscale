@@ -443,8 +443,22 @@ input:focus, select:focus, textarea:focus {
 
 /* Galería página de alojamiento */
 .ne-gallery { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; border-radius: var(--radius-lg); overflow: hidden; height: 420px; }
-.ne-gallery-main { height: 100%; }
+.ne-gallery-main { height: 100%; position: relative; }
 .ne-gallery-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ne-gallery-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 999px; border: none;
+  background: rgba(19,30,65,0.55); color: #fff; font-size: 20px; line-height: 1;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  opacity: 0.9; transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+.ne-gallery-nav:hover { opacity: 1; background: rgba(19,30,65,0.75); }
+.ne-gallery-nav-prev { left: 12px; }
+.ne-gallery-nav-next { right: 12px; }
+.ne-gallery-contador {
+  position: absolute; bottom: 12px; left: 12px; background: rgba(19,30,65,0.6); color: #fff;
+  font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px;
+}
 .ne-gallery-side { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; height: 100%; }
 .ne-gallery-side img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ne-gallery-more {
@@ -540,6 +554,12 @@ input:focus, select:focus, textarea:focus {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
   background: #fff; border-top: 1px solid var(--border); box-shadow: 0 -4px 16px rgba(19,30,65,0.08);
   padding: 12px 16px; align-items: center; justify-content: space-between; gap: 12px;
+}
+.ne-mobile-book-info { display: flex; align-items: center; gap: 10px; }
+.ne-mobile-whatsapp {
+  width: 38px; height: 38px; border-radius: 999px; background: #25D366; color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  flex-shrink: 0;
 }
 .ne-mobile-book-bar .precio { font-size: 15px; font-weight: 700; color: var(--dark); }
 .ne-mobile-book-bar .precio span { display: block; font-size: 11px; font-weight: 500; color: var(--text-secondary); }
