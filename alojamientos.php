@@ -68,9 +68,7 @@ if ($orden === 'calificacion') $ordenSql = 'promedio_calificacion DESC, total_re
 $sql = "SELECT a.*,
             (SELECT archivo FROM apartamento_fotos f WHERE f.apartamento_id = a.id ORDER BY f.es_principal DESC, f.id ASC LIMIT 1) AS foto_portada,
             (SELECT COUNT(*) FROM apartamento_fotos f WHERE f.apartamento_id = a.id) AS total_fotos,
-            (SELECT GROUP_CONCAT(t.archivo ORDER BY t.es_principal DESC, t.id ASC SEPARATOR '|') FROM (
-                SELECT archivo, es_principal, id FROM apartamento_fotos WHERE apartamento_id = a.id ORDER BY es_principal DESC, id ASC LIMIT 4
-            ) t) AS fotos_preview,
+            (SELECT GROUP_CONCAT(f2.archivo ORDER BY f2.es_principal DESC, f2.id ASC SEPARATOR '|') FROM apartamento_fotos f2 WHERE f2.apartamento_id = a.id) AS fotos_preview,
             (SELECT COALESCE(AVG(calificacion), 0) FROM resenas r WHERE r.apartamento_id = a.id) AS promedio_calificacion,
             (SELECT COUNT(*) FROM resenas r WHERE r.apartamento_id = a.id) AS total_resenas
         FROM apartamentos a";
@@ -218,7 +216,7 @@ $pageTitle = 'Todos los alojamientos disponibles';
       <?php else: ?>
         <div class="ne-grid">
           <?php foreach ($apartamentos as $a): ?>
-            <?php $fotosPreview = $a['fotos_preview'] ? explode('|', $a['fotos_preview']) : []; ?>
+            <?php $fotosPreview = $a['fotos_preview'] ? array_slice(explode('|', $a['fotos_preview']), 0, 4) : []; ?>
             <div class="ne-card">
               <div class="ne-card-media">
                 <?php if ($fotosPreview): ?>
