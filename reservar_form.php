@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'La fecha de fin no puede ser anterior a la fecha de inicio.';
     } else {
         $stmt = $pdo->prepare(
-            'SELECT COUNT(*) FROM reservas WHERE apartamento_id = ? AND fecha_inicio <= ? AND fecha_fin >= ?'
+            'SELECT COUNT(*) FROM reservas WHERE apartamento_id = ? AND fecha_inicio < ? AND fecha_fin > ?'
         );
         $stmt->execute([$apartamentoId, $solicitud['fecha_fin'], $solicitud['fecha_inicio']]);
         if ((int) $stmt->fetchColumn() > 0) {
@@ -267,6 +267,7 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
             <label>Fecha de fin (check-out)
               <input type="date" name="fecha_fin" id="fecha_fin" value="<?= e($solicitud['fecha_fin']) ?>" required>
             </label>
+            <p class="cal-hint">El check-in es después del mediodía y el check-out antes del mediodía, por eso el mismo día puede aparecer disponible para otra reserva.</p>
 
             <div class="calendario-wrap">
               <span class="calendario-titulo">Disponibilidad</span>

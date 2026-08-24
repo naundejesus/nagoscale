@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($valorTotal <= 0) {
         $error = 'El valor total debe ser mayor que cero.';
     } else {
-        $sqlSolape = 'SELECT COUNT(*) FROM reservas WHERE apartamento_id = ? AND fecha_inicio <= ? AND fecha_fin >= ?';
+        $sqlSolape = 'SELECT COUNT(*) FROM reservas WHERE apartamento_id = ? AND fecha_inicio < ? AND fecha_fin > ?';
         $paramsSolape = [$apartamentoId, $fechaFin, $fechaInicio];
         if ($id) {
             $sqlSolape .= ' AND id != ?';

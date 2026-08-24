@@ -38,7 +38,8 @@ $fechasOcupadas = [];
 foreach ($stmt->fetchAll() as $row) {
     $inicio = new DateTime($row['fecha_inicio']);
     $fin = new DateTime($row['fecha_fin']);
-    $fin->modify('+1 day');
+    // El día de checkout (fecha_fin) NO se marca como ocupado: el huésped
+    // sale antes del mediodía y ese mismo día puede empezar otra reserva.
     $periodo = new DatePeriod($inicio, new DateInterval('P1D'), $fin);
     foreach ($periodo as $dia) {
         $fechasOcupadas[] = $dia->format('Y-m-d');

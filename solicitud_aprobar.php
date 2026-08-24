@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Selecciona una plataforma válida.';
     } else {
         $stmt = $pdo->prepare(
-            'SELECT COUNT(*) FROM reservas WHERE apartamento_id = ? AND fecha_inicio <= ? AND fecha_fin >= ?'
+            'SELECT COUNT(*) FROM reservas WHERE apartamento_id = ? AND fecha_inicio < ? AND fecha_fin > ?'
         );
         $stmt->execute([$solicitud['apartamento_id'], $solicitud['fecha_fin'], $solicitud['fecha_inicio']]);
         if ((int) $stmt->fetchColumn() > 0) {

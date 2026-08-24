@@ -46,7 +46,7 @@ if ($destino !== '') {
 if ($checkinValido && $checkoutValido && $checkout > $checkin) {
     $where[] = 'NOT EXISTS (
         SELECT 1 FROM reservas r
-        WHERE r.apartamento_id = a.id AND r.fecha_inicio <= ? AND r.fecha_fin >= ?
+        WHERE r.apartamento_id = a.id AND r.fecha_inicio < ? AND r.fecha_fin > ?
     )';
     array_push($params, $checkout, $checkin);
 }
