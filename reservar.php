@@ -83,6 +83,9 @@ if ($orden === 'calificacion') $ordenSql = 'promedio_calificacion DESC, total_re
 $sql = "SELECT a.*,
             (SELECT archivo FROM apartamento_fotos f WHERE f.apartamento_id = a.id ORDER BY f.es_principal DESC, f.id ASC LIMIT 1) AS foto_portada,
             (SELECT COUNT(*) FROM apartamento_fotos f WHERE f.apartamento_id = a.id) AS total_fotos,
+            (SELECT GROUP_CONCAT(t.archivo ORDER BY t.es_principal DESC, t.id ASC SEPARATOR '|') FROM (
+                SELECT archivo, es_principal, id FROM apartamento_fotos WHERE apartamento_id = a.id ORDER BY es_principal DESC, id ASC LIMIT 4
+            ) t) AS fotos_preview,
             (SELECT COALESCE(AVG(calificacion), 0) FROM resenas r WHERE r.apartamento_id = a.id) AS promedio_calificacion,
             (SELECT COUNT(*) FROM resenas r WHERE r.apartamento_id = a.id) AS total_resenas
         FROM apartamentos a
@@ -232,10 +235,24 @@ $pageTitle = 'Alojamientos disponibles';
       <?php else: ?>
         <div class="ne-grid">
           <?php foreach ($apartamentos as $a): ?>
+            <?php $fotosPreview = $a['fotos_preview'] ? explode('|', $a['fotos_preview']) : []; ?>
             <div class="ne-card">
               <div class="ne-card-media">
-                <?php if ($a['foto_portada']): ?>
-                  <img src="assets/uploads/apartamentos/<?= e($a['foto_portada']) ?>" alt="<?= e($a['nombre']) ?>" class="ne-card-img" loading="lazy">
+                <?php if ($fotosPreview): ?>
+                  <div class="ne-card-carrusel">
+                    <?php foreach ($fotosPreview as $i => $foto): ?>
+                      <img src="assets/uploads/apartamentos/<?= e($foto) ?>" alt="<?= e($a['nombre']) ?>" class="ne-card-img<?= $i === 0 ? ' activa' : '' ?>" loading="lazy">
+                    <?php endforeach; ?>
+                  </div>
+                  <?php if (count($fotosPreview) > 1): ?>
+                    <button type="button" class="ne-card-nav ne-card-nav-prev" onclick="neCardFoto(this, -1)" aria-label="Foto anterior">‹</button>
+                    <button type="button" class="ne-card-nav ne-card-nav-next" onclick="neCardFoto(this, 1)" aria-label="Foto siguiente">›</button>
+                    <div class="ne-card-dots">
+                      <?php foreach ($fotosPreview as $i => $foto): ?>
+                        <span class="ne-card-dot<?= $i === 0 ? ' activo' : '' ?>"></span>
+                      <?php endforeach; ?>
+                    </div>
+                  <?php endif; ?>
                 <?php else: ?>
                   <div class="ne-card-img-placeholder"></div>
                 <?php endif; ?>

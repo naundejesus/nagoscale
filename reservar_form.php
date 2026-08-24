@@ -275,8 +275,8 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
                 <strong id="precio-total-valor">$ 0</strong>
               </div>
               <div class="precio-pago">
-                <p>Para apartar estas fechas, abona el <strong>50%</strong>: <strong id="precio-50-valor">$ 0</strong></p>
                 <?php if ($datosPago && ($datosPago['nequi_numero'] || $datosPago['bancolombia_numero'])): ?>
+                  <p>Para apartar estas fechas, abona el <strong>50%</strong>: <strong id="precio-50-valor">$ 0</strong></p>
                   <ul class="precio-cuentas">
                     <?php if ($datosPago['nequi_numero']): ?>
                       <li><strong>Nequi:</strong> <?= e($datosPago['nequi_numero']) ?></li>
@@ -291,6 +291,8 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
                     <?php endif; ?>
                   </ul>
                   <p class="cal-hint">Envía tu comprobante junto con la solicitud para agilizar la confirmación.</p>
+                <?php else: ?>
+                  <p class="cal-hint">Pagas directamente al llegar al alojamiento, no se requiere ningún abono para reservar.</p>
                 <?php endif; ?>
               </div>
             </div>
@@ -334,7 +336,7 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
 
     </div>
 
-    <aside class="ne-booking-card">
+    <aside class="ne-booking-card" id="ne-booking-card">
       <?php if ($apartamento['precio_noche'] !== null): ?>
         <div class="ne-booking-price"><?= formatCOP($apartamento['precio_noche']) ?> <span>/ noche</span></div>
       <?php endif; ?>
@@ -378,6 +380,19 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="assets/js/calendario.js"></script>
 <script>
+  (function () {
+    var tarjetaReserva = document.getElementById('ne-booking-card');
+    var seccionFormulario = document.getElementById('reservar');
+    if (tarjetaReserva && seccionFormulario && 'IntersectionObserver' in window) {
+      var observador = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (entrada) {
+          tarjetaReserva.classList.toggle('ne-booking-card-oculta', entrada.isIntersecting);
+        });
+      }, { threshold: 0.2 });
+      observador.observe(seccionFormulario);
+    }
+  })();
+
   function neIrPaso(paso) {
     document.querySelectorAll('.ne-step-panel').forEach(function (p) {
       p.classList.toggle('activo', p.getAttribute('data-panel') === String(paso));
@@ -412,7 +427,8 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
       .then(function (data) {
         if (!data.tiene_precio) { caja.hidden = true; return; }
         document.getElementById('precio-total-valor').textContent = formatCOP(data.valor_total);
-        document.getElementById('precio-50-valor').textContent = formatCOP(data.valor_50);
+        var el50 = document.getElementById('precio-50-valor');
+        if (el50) { el50.textContent = formatCOP(data.valor_50); }
         caja.hidden = false;
       })
       .catch(function () { caja.hidden = true; });

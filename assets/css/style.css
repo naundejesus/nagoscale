@@ -391,6 +391,22 @@ input:focus, select:focus, textarea:focus {
 .ne-card-media { position: relative; }
 .ne-card-img { width: 100%; height: 180px; object-fit: cover; display: block; }
 .ne-card-img-placeholder { background: linear-gradient(120deg, var(--dark) 0%, var(--primary) 140%); height: 180px; }
+.ne-card-carrusel { position: relative; width: 100%; height: 180px; overflow: hidden; }
+.ne-card-carrusel .ne-card-img { position: absolute; inset: 0; display: none; }
+.ne-card-carrusel .ne-card-img.activa { display: block; }
+.ne-card-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 26px; height: 26px; border-radius: 999px; border: none;
+  background: rgba(19,30,65,0.5); color: #fff; font-size: 16px; line-height: 1;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  opacity: 0.85; transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+.ne-card-nav:hover { opacity: 1; background: rgba(19,30,65,0.75); }
+.ne-card-nav-prev { left: 8px; }
+.ne-card-nav-next { right: 8px; }
+.ne-card-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; }
+.ne-card-dot { width: 5px; height: 5px; border-radius: 999px; background: rgba(255,255,255,0.65); }
+.ne-card-dot.activo { background: #fff; width: 6px; height: 6px; }
 .ne-fav-btn {
   position: absolute; top: 10px; right: 10px;
   width: 34px; height: 34px; border-radius: 999px; border: none;
@@ -472,7 +488,8 @@ input:focus, select:focus, textarea:focus {
 .ne-review-date { font-size: 12px; color: var(--text-secondary); }
 
 /* Tarjeta de reserva sticky */
-.ne-booking-card { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-md); position: sticky; top: 90px; display: flex; flex-direction: column; gap: 14px; }
+.ne-booking-card { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-md); position: sticky; top: 90px; display: flex; flex-direction: column; gap: 14px; transition: opacity 0.2s ease, visibility 0.2s ease; }
+.ne-booking-card-oculta { opacity: 0; visibility: hidden; }
 .ne-booking-price { font-size: 22px; color: var(--dark); font-weight: 800; }
 .ne-booking-price span { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
 .ne-booking-fields { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
