@@ -155,8 +155,11 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
     </div>
     <?php if ($resenas): ?>
       <div class="ne-listing-rating">
-        <span class="ne-stars"><?= estrellas_html($promedioCalificacion) ?></span>
-        <?= number_format($promedioCalificacion, 1) ?> · <?= count($resenas) ?> reseña<?= count($resenas) === 1 ? '' : 's' ?>
+        <span class="ne-rating-badge"><?= number_format($promedioCalificacion, 1) ?></span>
+        <span class="ne-rating-info">
+          <span class="label"><?= e(rating_label($promedioCalificacion)) ?></span>
+          <span class="count"><?= count($resenas) ?> reseña<?= count($resenas) === 1 ? '' : 's' ?></span>
+        </span>
       </div>
     <?php endif; ?>
   </div>
@@ -346,7 +349,10 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
         <div class="ne-booking-price"><?= formatCOP($apartamento['precio_noche']) ?> <span>/ noche</span></div>
       <?php endif; ?>
       <?php if ($resenas): ?>
-        <div style="font-size:13px; color:var(--text-secondary);"><span class="ne-stars"><?= estrellas_html($promedioCalificacion) ?></span> <?= number_format($promedioCalificacion, 1) ?> (<?= count($resenas) ?>)</div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="ne-rating-badge ne-rating-badge-sm"><?= number_format($promedioCalificacion, 1) ?></span>
+          <span style="font-size:13px; color:var(--text-secondary);"><?= e(rating_label($promedioCalificacion)) ?> · <?= count($resenas) ?> reseña<?= count($resenas) === 1 ? '' : 's' ?></span>
+        </div>
       <?php endif; ?>
       <a href="#reservar" class="btn btn-primary btn-block">Reservar ahora</a>
       <p style="font-size:12px; color:var(--text-secondary); text-align:center;">No se te cobrará todavía</p>

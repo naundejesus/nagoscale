@@ -126,3 +126,13 @@ function estrellas_html(float $promedio): string
     $llenas = max(0, min(5, $llenas));
     return str_repeat('★', $llenas) . str_repeat('☆', 5 - $llenas);
 }
+
+function rating_label(float $promedio): string
+{
+    if ($promedio >= 4.5) return 'Excepcional';
+    if ($promedio >= 4.0) return 'Excelente';
+    if ($promedio >= 3.5) return 'Muy bueno';
+    if ($promedio >= 3.0) return 'Bueno';
+    if ($promedio >= 2.0) return 'Aceptable';
+    return 'Bajo';
+}

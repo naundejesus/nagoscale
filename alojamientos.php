@@ -247,7 +247,10 @@ $pageTitle = 'Todos los alojamientos disponibles';
                 <?php $ubicacion = trim(implode(', ', array_filter([$a['zona'], $a['ciudad']]))); ?>
                 <span class="ne-card-loc">📍 <?= e($ubicacion ?: ($a['direccion'] ?? 'Ubicación disponible al reservar')) ?></span>
                 <?php if ($a['total_resenas'] > 0): ?>
-                  <span class="ne-card-rating"><span class="ne-stars"><?= estrellas_html((float) $a['promedio_calificacion']) ?></span> <?= number_format((float) $a['promedio_calificacion'], 1) ?> (<?= (int) $a['total_resenas'] ?>)</span>
+                  <span class="ne-card-rating">
+                    <span class="ne-rating-badge ne-rating-badge-sm"><?= number_format((float) $a['promedio_calificacion'], 1) ?></span>
+                    <span class="count"><?= (int) $a['total_resenas'] ?> reseña<?= (int) $a['total_resenas'] === 1 ? '' : 's' ?></span>
+                  </span>
                 <?php endif; ?>
                 <span class="ne-card-meta">
                   <?php
