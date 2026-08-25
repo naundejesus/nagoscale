@@ -29,6 +29,10 @@ $stmt->execute([$apartamentoId]);
 $resenas = $stmt->fetchAll();
 $promedioCalificacion = $resenas ? array_sum(array_column($resenas, 'calificacion')) / count($resenas) : 0;
 
+$stmt = $pdo->prepare('SELECT fecha_inicio, fecha_fin, precio_noche FROM temporadas_precio WHERE apartamento_id = ? ORDER BY fecha_inicio ASC');
+$stmt->execute([$apartamentoId]);
+$temporadasPrecio = $stmt->fetchAll();
+
 $amenidadesApartamento = decodificar_amenidades($apartamento['amenidades'] ?? null);
 $catalogoAmenidades = amenidades_disponibles();
 
@@ -85,7 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $apartamento['precio_noche'] !== null ? (float) $apartamento['precio_noche'] : null,
             $apartamento['precio_fin_semana'] !== null ? (float) $apartamento['precio_fin_semana'] : null,
             $solicitud['fecha_inicio'],
-            $solicitud['fecha_fin']
+            $solicitud['fecha_fin'],
+            $temporadasPrecio
         );
 
         $stmt = $pdo->prepare(

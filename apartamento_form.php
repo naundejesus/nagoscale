@@ -31,6 +31,7 @@ $apartamento = [
 $amenidadesSeleccionadas = [];
 $fotos = [];
 $resenas = [];
+$temporadas = [];
 
 if ($id) {
     $stmt = $pdo->prepare('SELECT * FROM apartamentos WHERE id = ? AND user_id = ?');
@@ -50,6 +51,10 @@ if ($id) {
     $stmt = $pdo->prepare('SELECT * FROM resenas WHERE apartamento_id = ? ORDER BY created_at DESC');
     $stmt->execute([$id]);
     $resenas = $stmt->fetchAll();
+
+    $stmt = $pdo->prepare('SELECT * FROM temporadas_precio WHERE apartamento_id = ? ORDER BY fecha_inicio ASC');
+    $stmt->execute([$id]);
+    $temporadas = $stmt->fetchAll();
 }
 
 $error = '';
@@ -395,6 +400,52 @@ require __DIR__ . '/includes/header.php';
       <input type="text" name="comentario" maxlength="500">
     </label>
     <button type="submit" class="btn btn-secondary">Agregar reseña</button>
+  </form>
+</div>
+
+<div class="form-card" style="max-width:640px; margin-top:20px;">
+  <h2 style="font-size:16px;">Temporadas con precio especial</h2>
+  <p class="cal-hint">Define rangos de fechas (ej. temporada alta, diciembre, Semana Santa) con un precio por noche distinto al normal. Si una noche de la reserva cae dentro de uno de estos rangos, se cobra este precio en vez del precio normal o de fin de semana.</p>
+
+  <?php if ($temporadas): ?>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <?php foreach ($temporadas as $t): ?>
+        <div style="border:1px solid var(--border); border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:start; gap:10px;">
+          <div>
+            <strong><?= e($t['nombre'] ?: 'Temporada especial') ?></strong>
+            <p style="margin:4px 0 0; font-size:13px; color:var(--text-secondary);">
+              <?= e((new DateTime($t['fecha_inicio']))->format('d/m/Y')) ?> — <?= e((new DateTime($t['fecha_fin']))->format('d/m/Y')) ?>
+              · <?= formatCOP($t['precio_noche']) ?> / noche
+            </p>
+          </div>
+          <form method="post" action="temporada_eliminar.php" onsubmit="return confirm('¿Eliminar esta temporada?');">
+            <?= csrf_field() ?>
+            <input type="hidden" name="id" value="<?= (int) $t['id'] ?>">
+            <button type="submit" class="btn-link btn-link-danger">Eliminar</button>
+          </form>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+
+  <form method="post" action="temporada_agregar.php" style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
+    <?= csrf_field() ?>
+    <input type="hidden" name="apartamento_id" value="<?= (int) $id ?>">
+    <label>Nombre de la temporada (opcional)
+      <input type="text" name="nombre" placeholder="Temporada alta, Diciembre, Semana Santa...">
+    </label>
+    <div class="form-grid-2">
+      <label>Desde
+        <input type="date" name="fecha_inicio" required>
+      </label>
+      <label>Hasta
+        <input type="date" name="fecha_fin" required>
+      </label>
+    </div>
+    <label>Precio por noche en esta temporada (COP)
+      <input type="number" name="precio_noche" min="0" step="1" required>
+    </label>
+    <button type="submit" class="btn btn-secondary">Agregar temporada</button>
   </form>
 </div>
 <?php endif; ?>

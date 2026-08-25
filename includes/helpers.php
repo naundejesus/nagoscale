@@ -80,7 +80,17 @@ function plataformaLabel(string $plataforma): string
     return $labels[$plataforma] ?? $plataforma;
 }
 
-function calcular_valor_estadia(?float $precioNoche, ?float $precioFinSemana, string $fechaInicio, string $fechaFin): ?float
+function precio_temporada_para_fecha(array $temporadas, string $fechaIso): ?float
+{
+    foreach ($temporadas as $t) {
+        if ($fechaIso >= $t['fecha_inicio'] && $fechaIso <= $t['fecha_fin']) {
+            return (float) $t['precio_noche'];
+        }
+    }
+    return null;
+}
+
+function calcular_valor_estadia(?float $precioNoche, ?float $precioFinSemana, string $fechaInicio, string $fechaFin, array $temporadas = []): ?float
 {
     if ($precioNoche === null || $precioNoche <= 0) {
         return null;
@@ -92,6 +102,12 @@ function calcular_valor_estadia(?float $precioNoche, ?float $precioFinSemana, st
     $total = 0.0;
 
     while ($actual < $fin) {
+        $precioTemporada = $temporadas ? precio_temporada_para_fecha($temporadas, $actual->format('Y-m-d')) : null;
+        if ($precioTemporada !== null) {
+            $total += $precioTemporada;
+            $actual->modify('+1 day');
+            continue;
+        }
         $diaSemana = (int) $actual->format('N'); // 1=lunes ... 5=viernes, 6=sábado, 7=domingo
         $total += in_array($diaSemana, [5, 6], true) ? $precioFinSemana : $precioNoche;
         $actual->modify('+1 day');

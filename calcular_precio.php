@@ -28,11 +28,16 @@ if (!$apartamento) {
     exit;
 }
 
+$stmt = $pdo->prepare('SELECT fecha_inicio, fecha_fin, precio_noche FROM temporadas_precio WHERE apartamento_id = ? ORDER BY fecha_inicio ASC');
+$stmt->execute([$apartamentoId]);
+$temporadas = $stmt->fetchAll();
+
 $valorTotal = calcular_valor_estadia(
     $apartamento['precio_noche'] !== null ? (float) $apartamento['precio_noche'] : null,
     $apartamento['precio_fin_semana'] !== null ? (float) $apartamento['precio_fin_semana'] : null,
     $fechaInicio,
-    $fechaFin
+    $fechaFin,
+    $temporadas
 );
 
 if ($valorTotal === null) {
