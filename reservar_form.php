@@ -368,7 +368,7 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
           class="btn btn-secondary btn-block"
           target="_blank"
           rel="noopener"
-        >💬 Contactar por WhatsApp</a>
+        ><?= whatsapp_icon_svg(18) ?> Contactar por WhatsApp</a>
       <?php endif; ?>
     </aside>
   </div>
@@ -400,7 +400,7 @@ if ($apartamento['cocinas'] !== null) $metaPartes[] = $apartamento['cocinas'] . 
         target="_blank"
         rel="noopener"
         aria-label="Contactar por WhatsApp"
-      >💬</a>
+      ><?= whatsapp_icon_svg(20) ?></a>
     <?php endif; ?>
   </div>
   <a href="#reservar" class="btn btn-primary">Reservar</a>
