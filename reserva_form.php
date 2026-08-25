@@ -176,10 +176,12 @@ require __DIR__ . '/includes/header.php';
     <input type="number" name="valor_total" id="valor_total" min="0" step="1" value="<?= e($reserva['valor_total']) ?>" required>
   </label>
 
-  <div class="split-preview">
-    <div>75% Propietario <strong id="preview_propietario">$ 0</strong></div>
-    <div>25% <?= e(brand_name()) ?> <strong id="preview_comision">$ 0</strong></div>
-  </div>
+  <?php if (mostrar_split_comision()): ?>
+    <div class="split-preview">
+      <div>75% Propietario <strong id="preview_propietario">$ 0</strong></div>
+      <div>25% <?= e(brand_name()) ?> <strong id="preview_comision">$ 0</strong></div>
+    </div>
+  <?php endif; ?>
 
   <label>Notas (opcional)
     <input type="text" name="notas" maxlength="255" value="<?= e($reserva['notas'] ?? '') ?>" placeholder="Referencia, huésped, etc.">
@@ -193,11 +195,14 @@ require __DIR__ . '/includes/header.php';
     return '$ ' + Math.round(n).toLocaleString('es-CO');
   }
   function updatePreview() {
+    var elPropietario = document.getElementById('preview_propietario');
+    var elComision = document.getElementById('preview_comision');
+    if (!elPropietario || !elComision) return;
     var total = parseFloat(document.getElementById('valor_total').value) || 0;
     var propietario = Math.round(total * 0.75);
     var comision = Math.round(total - propietario);
-    document.getElementById('preview_propietario').textContent = formatCOP(propietario);
-    document.getElementById('preview_comision').textContent = formatCOP(comision);
+    elPropietario.textContent = formatCOP(propietario);
+    elComision.textContent = formatCOP(comision);
   }
   document.getElementById('valor_total').addEventListener('input', updatePreview);
   updatePreview();

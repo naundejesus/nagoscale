@@ -55,14 +55,16 @@ $totales = $filtro['totales'];
       <span class="summary-label">Valor total</span>
       <span class="summary-value"><?= formatCOP($totales['total']) ?></span>
     </div>
-    <div class="summary-card summary-card-owner">
-      <span class="summary-label">75% Propietarios</span>
-      <span class="summary-value"><?= formatCOP($totales['propietario']) ?></span>
-    </div>
-    <div class="summary-card summary-card-commission">
-      <span class="summary-label">25% <?= e(brand_name()) ?></span>
-      <span class="summary-value"><?= formatCOP($totales['comision']) ?></span>
-    </div>
+    <?php if (mostrar_split_comision()): ?>
+      <div class="summary-card summary-card-owner">
+        <span class="summary-label">75% Propietarios</span>
+        <span class="summary-value"><?= formatCOP($totales['propietario']) ?></span>
+      </div>
+      <div class="summary-card summary-card-commission">
+        <span class="summary-label">25% <?= e(brand_name()) ?></span>
+        <span class="summary-value"><?= formatCOP($totales['comision']) ?></span>
+      </div>
+    <?php endif; ?>
   </div>
 
   <div class="table-wrap">
@@ -75,14 +77,16 @@ $totales = $filtro['totales'];
         <th>Propietario</th>
         <th>Plataforma</th>
         <th>Valor total</th>
-        <th>75% Propietario</th>
-        <th>25% <?= e(brand_name()) ?></th>
+        <?php if (mostrar_split_comision()): ?>
+          <th>75% Propietario</th>
+          <th>25% <?= e(brand_name()) ?></th>
+        <?php endif; ?>
         <th>Notas</th>
       </tr>
     </thead>
     <tbody>
       <?php if (!$reservas): ?>
-        <tr><td colspan="9" class="empty-state">No hay reservas para los filtros seleccionados.</td></tr>
+        <tr><td colspan="<?= mostrar_split_comision() ? 9 : 7 ?>" class="empty-state">No hay reservas para los filtros seleccionados.</td></tr>
       <?php endif; ?>
       <?php foreach ($reservas as $r): ?>
         <tr>
@@ -92,8 +96,10 @@ $totales = $filtro['totales'];
           <td><?= e($r['apartamento_propietario'] ?? '') ?></td>
           <td><?= e(plataformaLabel($r['plataforma'])) ?></td>
           <td><?= formatCOP($r['valor_total']) ?></td>
-          <td><?= formatCOP($r['valor_propietario']) ?></td>
-          <td><?= formatCOP($r['valor_comision']) ?></td>
+          <?php if (mostrar_split_comision()): ?>
+            <td><?= formatCOP($r['valor_propietario']) ?></td>
+            <td><?= formatCOP($r['valor_comision']) ?></td>
+          <?php endif; ?>
           <td><?= e($r['notas'] ?? '') ?></td>
         </tr>
       <?php endforeach; ?>

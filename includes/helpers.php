@@ -17,6 +17,11 @@ function asset_version(): string
     return (string) (@filemtime($ruta) ?: time());
 }
 
+function mostrar_split_comision(): bool
+{
+    return defined('SHOW_COMISION_SPLIT') ? (bool) SHOW_COMISION_SPLIT : true;
+}
+
 function brand_name(): string
 {
     return defined('BRAND_NAME') ? BRAND_NAME : 'NagoScale';

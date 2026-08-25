@@ -21,3 +21,9 @@ define('APP_URL', 'https://inmueblespordias.nagoscale.com');
 // define('BRAND_DARK_COLOR', '#131E41');
 // Además, sube el logo del cliente reemplazando assets/img/header-banner.png
 // y assets/img/favicon.png.
+
+// --- Panel administrativo (opcional) ---
+// Por defecto el panel muestra el desglose 75% propietario / 25% comisión
+// en reservas, reportes y exportes. Si este cliente no debe verlo (solo el
+// valor total de cada reserva), descomenta esta línea:
+// define('SHOW_COMISION_SPLIT', false);
