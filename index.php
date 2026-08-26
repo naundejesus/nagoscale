@@ -2,5 +2,5 @@
 declare(strict_types=1);
 require __DIR__ . '/includes/bootstrap.php';
 
-header('Location: ' . (current_user_id() ? 'reservas.php' : 'login.php'));
+header('Location: ' . (current_user_id() ? 'reservas.php' : 'alojamientos.php'));
 exit;
