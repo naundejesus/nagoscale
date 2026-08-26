@@ -15,18 +15,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = (string) ($_POST['password'] ?? '');
 
-    $stmt = $pdo->prepare('SELECT * FROM users WHERE username = ?');
-    $stmt->execute([$username]);
-    $user = $stmt->fetch();
+    $segundosBloqueado = $username !== '' ? login_bloqueado_segundos($pdo, $username) : null;
 
-    if ($user && password_verify($password, $user['password_hash'])) {
-        session_regenerate_id(true);
-        $_SESSION['user_id'] = (int) $user['id'];
-        $_SESSION['username'] = $user['username'];
-        header('Location: reservas.php');
-        exit;
+    if ($segundosBloqueado !== null) {
+        $minutos = (int) ceil($segundosBloqueado / 60);
+        $error = "Demasiados intentos fallidos. Intenta de nuevo en $minutos minuto" . ($minutos === 1 ? '' : 's') . '.';
+    } else {
+        $stmt = $pdo->prepare('SELECT * FROM users WHERE username = ?');
+        $stmt->execute([$username]);
+        $user = $stmt->fetch();
+
+        if ($user && password_verify($password, $user['password_hash'])) {
+            limpiar_intentos_login($pdo, $username);
+            session_regenerate_id(true);
+            $_SESSION['user_id'] = (int) $user['id'];
+            $_SESSION['username'] = $user['username'];
+            header('Location: reservas.php');
+            exit;
+        }
+        if ($username !== '') {
+            registrar_intento_fallido($pdo, $username);
+        }
+        $error = 'Usuario o contraseña incorrectos.';
     }
-    $error = 'Usuario o contraseña incorrectos.';
 }
 ?>
 <!doctype html>
