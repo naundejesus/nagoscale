@@ -1,0 +1,5 @@
+config.php
+.DS_Store
+*.log
+assets/uploads/apartamentos/*
+!assets/uploads/apartamentos/.gitkeep
