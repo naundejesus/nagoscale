@@ -1,0 +1,8 @@
+Require all denied
+
+# Defensa en profundidad adicional: aunque todo el directorio ya está
+# bloqueado arriba, esto prohíbe explícitamente que cualquier archivo aquí se
+# interprete como script si alguna vez cambia la regla de arriba.
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>
