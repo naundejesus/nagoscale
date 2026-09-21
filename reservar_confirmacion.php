@@ -3,17 +3,36 @@ declare(strict_types=1);
 require __DIR__ . '/includes/bootstrap.php';
 
 $id = (int) ($_GET['id'] ?? 0);
+$token = (string) ($_GET['t'] ?? '');
 
-$stmt = $pdo->prepare(
-    'SELECT s.*, a.nombre AS apartamento_nombre, a.direccion, a.user_id
-     FROM solicitudes s
-     JOIN apartamentos a ON a.id = s.apartamento_id
-     WHERE s.id = ?'
-);
-$stmt->execute([$id]);
-$solicitud = $stmt->fetch();
+$solicitud = null;
+if ($id > 0 && $token !== '') {
+    $stmt = $pdo->prepare(
+        'SELECT s.*, a.nombre AS apartamento_nombre, a.direccion, a.user_id
+         FROM solicitudes s
+         JOIN apartamentos a ON a.id = s.apartamento_id
+         WHERE s.id = ?'
+    );
+    $stmt->execute([$id]);
+    $fila = $stmt->fetch();
+
+    // Posesión del token (no el ID) es lo que autoriza el acceso: sin sesión,
+    // sin cuenta del huésped, comparado con hash_equals() para evitar timing
+    // attacks, y con expiración para no dejar la URL vigente indefinidamente.
+    if (
+        $fila
+        && $fila['token_confirmacion'] !== null
+        && hash_equals($fila['token_confirmacion'], $token)
+        && $fila['token_expira_at'] !== null
+        && strtotime($fila['token_expira_at']) > time()
+    ) {
+        $solicitud = $fila;
+    }
+}
 
 if (!$solicitud) {
+    // Mismo mensaje para "no existe" y "token inválido/expirado": no revela
+    // si el ID corresponde a una solicitud real.
     http_response_code(404);
     die('Solicitud no encontrada.');
 }

@@ -13,4 +13,21 @@ Options -Indexes
   Header set X-Content-Type-Options "nosniff"
   Header set X-Frame-Options "SAMEORIGIN"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # CSP compatible con lo que la app usa hoy: Leaflet + tiles de OpenStreetMap
+  # (unpkg.com / *.tile.openstreetmap.org), Google Fonts (fonts.googleapis.com
+  # + fonts.gstatic.com), y el uso extendido de <script>/<style> inline y
+  # atributos onclick/onsubmit/onchange en las vistas (script-src/style-src
+  # llevan 'unsafe-inline' a propósito: quitarlo rompería la aplicación hoy;
+  # ver WHITE_LABEL.md o el plan de Fase 3 para el refactor que lo permitiría).
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+
+  # max-age corto a propósito mientras se verifica HTTPS en producción real
+  # (Hostinger). Subir gradualmente (ej. 86400, luego 31536000) una vez
+  # confirmado que el sitio sirve siempre por HTTPS de forma estable. NO
+  # añadir "preload" hasta verificar completamente la configuración de
+  # producción (revertir preload es lento: queda cacheado en los navegadores).
+  Header always set Strict-Transport-Security "max-age=300; includeSubDomains"
+
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
 </IfModule>

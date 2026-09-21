@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     mkdir($uploadDir, 0755, true);
                 }
                 $archivo = bin2hex(random_bytes(16)) . '.' . $mimeExtensiones[$mime];
-                if (move_uploaded_file($_FILES['foto_documento']['tmp_name'], $uploadDir . $archivo)) {
+                if (reencodar_imagen_segura($_FILES['foto_documento']['tmp_name'], $mime, $uploadDir . $archivo)) {
                     $fotoDocumento = $archivo;
                 }
             }

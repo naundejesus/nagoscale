@@ -20,9 +20,10 @@ $stmt = $pdo->prepare('SELECT archivo FROM apartamento_fotos WHERE apartamento_i
 $stmt->execute([$apartamentoId]);
 $fotos = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-$stmt = $pdo->prepare('SELECT whatsapp, nequi_numero, bancolombia_tipo_cuenta, bancolombia_numero, bancolombia_titular FROM users WHERE id = ?');
+$stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
 $stmt->execute([$apartamento['user_id']]);
-$datosPago = $stmt->fetch();
+$propietarioUsuario = $stmt->fetch();
+$datosPago = usuario_datos_publicos_pago($propietarioUsuario ?: []);
 
 $stmt = $pdo->prepare('SELECT * FROM resenas WHERE apartamento_id = ? ORDER BY created_at DESC');
 $stmt->execute([$apartamentoId]);
@@ -93,9 +94,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $temporadasPrecio
         );
 
+        $tokenConfirmacion = bin2hex(random_bytes(32));
+        $tokenExpiraAt = (new DateTime('+7 days'))->format('Y-m-d H:i:s');
+
         $stmt = $pdo->prepare(
-            'INSERT INTO solicitudes (apartamento_id, nombre_cliente, telefono, correo, mensaje, fecha_inicio, fecha_fin, huespedes, valor_estimado)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            'INSERT INTO solicitudes (apartamento_id, nombre_cliente, telefono, correo, mensaje, fecha_inicio, fecha_fin, huespedes, valor_estimado, token_confirmacion, token_expira_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $apartamentoId,
@@ -107,6 +111,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $solicitud['fecha_fin'],
             $huespedesNum,
             $valorEstimado,
+            $tokenConfirmacion,
+            $tokenExpiraAt,
         ]);
         $solicitudId = (int) $pdo->lastInsertId();
 
@@ -124,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'mensaje' => $solicitud['mensaje'],
         ]);
 
-        header('Location: reservar_confirmacion.php?id=' . $solicitudId);
+        header('Location: reservar_confirmacion.php?id=' . $solicitudId . '&t=' . $tokenConfirmacion);
         exit;
     }
 }

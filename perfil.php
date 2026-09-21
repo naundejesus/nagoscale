@@ -18,13 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bancolombiaTipoCuenta = trim($_POST['bancolombia_tipo_cuenta'] ?? '');
     $bancolombiaNumero = trim($_POST['bancolombia_numero'] ?? '');
     $bancolombiaTitular = trim($_POST['bancolombia_titular'] ?? '');
+    $mostrarDatosPagoPublico = isset($_POST['mostrar_datos_pago_publico']) ? 1 : 0;
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Escribe un correo electrónico válido.';
     } else {
         $stmt = $pdo->prepare(
             'UPDATE users
-             SET email = ?, whatsapp = ?, nequi_numero = ?, bancolombia_tipo_cuenta = ?, bancolombia_numero = ?, bancolombia_titular = ?
+             SET email = ?, whatsapp = ?, nequi_numero = ?, bancolombia_tipo_cuenta = ?, bancolombia_numero = ?, bancolombia_titular = ?, mostrar_datos_pago_publico = ?
              WHERE id = ?'
         );
         $stmt->execute([
@@ -34,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $bancolombiaTipoCuenta ?: null,
             $bancolombiaNumero ?: null,
             $bancolombiaTitular ?: null,
+            $mostrarDatosPagoPublico,
             current_user_id(),
         ]);
         $usuario = array_merge($usuario, [
@@ -43,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'bancolombia_tipo_cuenta' => $bancolombiaTipoCuenta,
             'bancolombia_numero' => $bancolombiaNumero,
             'bancolombia_titular' => $bancolombiaTitular,
+            'mostrar_datos_pago_publico' => $mostrarDatosPagoPublico,
         ]);
         $guardado = true;
     }
@@ -77,8 +80,16 @@ require __DIR__ . '/includes/header.php';
 
   <hr style="border:none; border-top:1px solid var(--border); margin:0;">
   <span style="font-size:13px; color:var(--text-muted); font-weight:600;">
-    Datos de pago (se muestran a tus clientes para que abonen el 50% al reservar)
+    Datos de pago
   </span>
+
+  <label class="ne-checkbox" style="display:flex; align-items:center; gap:8px;">
+    <input type="checkbox" name="mostrar_datos_pago_publico" <?= !empty($usuario['mostrar_datos_pago_publico']) ? 'checked' : '' ?>>
+    Mostrar mis datos de pago a los huéspedes en la página pública de mis alojamientos
+  </label>
+  <p style="font-size:12px; color:var(--text-muted); margin:0;">
+    Mientras esta opción esté desactivada, tu Nequi y Bancolombia se guardan pero NO se muestran a nadie en la página pública. Tu WhatsApp de contacto siempre es visible para tus clientes, aunque esta opción esté desactivada.
+  </p>
 
   <label>Nequi — número de celular
     <input type="text" name="nequi_numero" value="<?= e($usuario['nequi_numero'] ?? '') ?>" placeholder="300 000 0000">

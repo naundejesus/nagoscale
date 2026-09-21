@@ -6,6 +6,159 @@ function e($value): string
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
+// Único punto autorizado a decidir qué columnas de `users` cruzan al frontend
+// público. Cualquier vista pública que necesite mostrar datos de un
+// propietario debe pasar por aquí — nunca hacer SELECT directo de columnas
+// de `users` para exponerlas sin pasar por esta whitelist. `whatsapp` es
+// siempre público (es su propósito); los datos de pago solo si el propio
+// propietario dio su consentimiento explícito en su perfil.
+function usuario_datos_publicos_pago(array $user): array
+{
+    $publico = [
+        'whatsapp' => $user['whatsapp'] ?? null,
+        'nequi_numero' => null,
+        'bancolombia_tipo_cuenta' => null,
+        'bancolombia_numero' => null,
+        'bancolombia_titular' => null,
+    ];
+
+    if (!empty($user['mostrar_datos_pago_publico'])) {
+        $publico['nequi_numero'] = $user['nequi_numero'] ?? null;
+        $publico['bancolombia_tipo_cuenta'] = $user['bancolombia_tipo_cuenta'] ?? null;
+        $publico['bancolombia_numero'] = $user['bancolombia_numero'] ?? null;
+        $publico['bancolombia_titular'] = $user['bancolombia_titular'] ?? null;
+    }
+
+    return $publico;
+}
+
+// Crea o actualiza una reserva verificando el solapamiento de fechas dentro
+// de una transacción con bloqueo de la fila del apartamento (SELECT ... FOR
+// UPDATE), de forma que dos aprobaciones/creaciones concurrentes sobre el
+// MISMO apartamento se serialicen: la segunda espera a que la primera
+// confirme o revierta, y entonces vuelve a evaluar el solapamiento con datos
+// ya actualizados. Usada por reserva_form.php y solicitud_aprobar.php para
+// no duplicar esta lógica (antes estaba repetida en ambos archivos, sin
+// ninguna garantía transaccional).
+//
+// La regla de solapamiento NO cambia: fecha_inicio < fecha_fin_existente AND
+// fecha_fin > fecha_inicio_existente (comparación estricta), lo que preserva
+// que el check-out de una reserva pueda coincidir con el check-in de otra el
+// mismo día.
+function crear_reserva_sin_solape(
+    PDO $pdo,
+    int $apartamentoId,
+    string $fechaInicio,
+    string $fechaFin,
+    ?int $excluirReservaId,
+    string $plataforma,
+    float $valorTotal,
+    ?string $notas
+): array {
+    $maxIntentos = 2; // 1 intento + 1 reintento ante deadlock (MySQL error 1213)
+
+    for ($intento = 1; $intento <= $maxIntentos; $intento++) {
+        try {
+            $pdo->beginTransaction();
+
+            $stmt = $pdo->prepare('SELECT id FROM apartamentos WHERE id = ? FOR UPDATE');
+            $stmt->execute([$apartamentoId]);
+            if (!$stmt->fetch()) {
+                $pdo->rollBack();
+                return ['error' => 'Alojamiento no válido.'];
+            }
+
+            $sql = 'SELECT COUNT(*) FROM reservas WHERE apartamento_id = ? AND fecha_inicio < ? AND fecha_fin > ?';
+            $params = [$apartamentoId, $fechaFin, $fechaInicio];
+            if ($excluirReservaId) {
+                $sql .= ' AND id != ?';
+                $params[] = $excluirReservaId;
+            }
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            if ((int) $stmt->fetchColumn() > 0) {
+                $pdo->rollBack();
+                return ['error' => 'Ese alojamiento ya tiene una reserva que se cruza con las fechas seleccionadas.'];
+            }
+
+            $valorPropietario = round($valorTotal * 0.75, 2);
+            $valorComision = round($valorTotal - $valorPropietario, 2);
+
+            if ($excluirReservaId) {
+                $stmt = $pdo->prepare(
+                    'UPDATE reservas
+                     SET apartamento_id = ?, fecha_inicio = ?, fecha_fin = ?, plataforma = ?, valor_total = ?,
+                         valor_propietario = ?, valor_comision = ?, notas = ?
+                     WHERE id = ?'
+                );
+                $stmt->execute([$apartamentoId, $fechaInicio, $fechaFin, $plataforma, $valorTotal, $valorPropietario, $valorComision, $notas, $excluirReservaId]);
+                $reservaId = $excluirReservaId;
+            } else {
+                $stmt = $pdo->prepare(
+                    'INSERT INTO reservas (apartamento_id, fecha_inicio, fecha_fin, plataforma, valor_total, valor_propietario, valor_comision, notas)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+                );
+                $stmt->execute([$apartamentoId, $fechaInicio, $fechaFin, $plataforma, $valorTotal, $valorPropietario, $valorComision, $notas]);
+                $reservaId = (int) $pdo->lastInsertId();
+            }
+
+            $pdo->commit();
+            return ['reserva_id' => $reservaId, 'valor_propietario' => $valorPropietario, 'valor_comision' => $valorComision];
+        } catch (PDOException $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            $esDeadlock = ($e->errorInfo[1] ?? null) === 1213;
+            if ($esDeadlock && $intento < $maxIntentos) {
+                usleep(random_int(50000, 150000)); // jitter corto antes de reintentar
+                continue;
+            }
+            throw $e;
+        }
+    }
+
+    return ['error' => 'No se pudo completar la operación, intenta de nuevo.'];
+}
+
+const UPLOAD_IMAGEN_MAX_BYTES = 8 * 1024 * 1024; // 8 MB, antes de intentar decodificar
+
+// Re-codifica una imagen subida desde cero con GD en vez de copiar el
+// archivo original tal cual. Esto neutraliza archivos "polyglot" (una
+// cabecera de imagen válida con datos ajenos —p. ej. PHP— incrustados más
+// adelante en el mismo archivo): al decodificar y volver a generar la
+// imagen a partir de los píxeles reales, cualquier byte que no forme parte
+// de la imagen decodificada (incluidos metadatos EXIF) se descarta. Si GD no
+// logra decodificar el archivo como una imagen real de ese tipo, devuelve
+// false (el archivo se rechaza, aunque haya pasado el chequeo de MIME).
+function reencodar_imagen_segura(string $origenTmp, string $mime, string $destino): bool
+{
+    $tamano = @filesize($origenTmp);
+    if ($tamano === false || $tamano <= 0 || $tamano > UPLOAD_IMAGEN_MAX_BYTES) {
+        return false;
+    }
+
+    $imagen = match ($mime) {
+        'image/jpeg' => @imagecreatefromjpeg($origenTmp),
+        'image/png' => @imagecreatefrompng($origenTmp),
+        'image/webp' => @imagecreatefromwebp($origenTmp),
+        default => false,
+    };
+
+    if ($imagen === false) {
+        return false;
+    }
+
+    $ok = match ($mime) {
+        'image/jpeg' => imagejpeg($imagen, $destino, 85),
+        'image/png' => imagepng($imagen, $destino, 6),
+        'image/webp' => imagewebp($imagen, $destino, 85),
+        default => false,
+    };
+
+    imagedestroy($imagen);
+    return $ok;
+}
+
 function formatCOP($value): string
 {
     return '$ ' . number_format((float) $value, 0, ',', '.');

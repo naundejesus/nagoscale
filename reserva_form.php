@@ -68,41 +68,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Selecciona una plataforma válida.';
     } elseif ($valorTotal <= 0) {
         $error = 'El valor total debe ser mayor que cero.';
-    } else {
-        $sqlSolape = 'SELECT COUNT(*) FROM reservas WHERE apartamento_id = ? AND fecha_inicio < ? AND fecha_fin > ?';
-        $paramsSolape = [$apartamentoId, $fechaFin, $fechaInicio];
-        if ($id) {
-            $sqlSolape .= ' AND id != ?';
-            $paramsSolape[] = $id;
-        }
-        $stmt = $pdo->prepare($sqlSolape);
-        $stmt->execute($paramsSolape);
-        if ((int) $stmt->fetchColumn() > 0) {
-            $error = 'Ese alojamiento ya tiene una reserva que se cruza con las fechas seleccionadas.';
-        }
     }
 
     if (!$error) {
-        $valorPropietario = round($valorTotal * 0.75, 2);
-        $valorComision = round($valorTotal - $valorPropietario, 2);
+        $resultado = crear_reserva_sin_solape(
+            $pdo, $apartamentoId, $fechaInicio, $fechaFin, $id ?: null, $plataforma, $valorTotal, $notas ?: null
+        );
 
-        if ($id) {
-            $stmt = $pdo->prepare(
-                'UPDATE reservas
-                 SET apartamento_id = ?, fecha_inicio = ?, fecha_fin = ?, plataforma = ?, valor_total = ?,
-                     valor_propietario = ?, valor_comision = ?, notas = ?
-                 WHERE id = ?'
-            );
-            $stmt->execute([$apartamentoId, $fechaInicio, $fechaFin, $plataforma, $valorTotal, $valorPropietario, $valorComision, $notas ?: null, $id]);
+        if (isset($resultado['error'])) {
+            $error = $resultado['error'];
         } else {
-            $stmt = $pdo->prepare(
-                'INSERT INTO reservas (apartamento_id, fecha_inicio, fecha_fin, plataforma, valor_total, valor_propietario, valor_comision, notas)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-            );
-            $stmt->execute([$apartamentoId, $fechaInicio, $fechaFin, $plataforma, $valorTotal, $valorPropietario, $valorComision, $notas ?: null]);
+            header('Location: reservas.php?guardado=1');
+            exit;
         }
-        header('Location: reservas.php?guardado=1');
-        exit;
     }
 
     $reserva = [

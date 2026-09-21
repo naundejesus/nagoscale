@@ -3,3 +3,4 @@ config.php
 *.log
 assets/uploads/apartamentos/*
 !assets/uploads/apartamentos/.gitkeep
+!assets/uploads/apartamentos/.htaccess

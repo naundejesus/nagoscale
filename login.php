@@ -15,9 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = (string) ($_POST['password'] ?? '');
 
+    $ip = ip_cliente();
     $segundosBloqueado = $username !== '' ? login_bloqueado_segundos($pdo, $username) : null;
 
-    if ($segundosBloqueado !== null) {
+    if (ip_limitada($pdo, $ip)) {
+        $error = 'Demasiados intentos desde tu conexión. Intenta de nuevo en unos minutos.';
+    } elseif ($segundosBloqueado !== null) {
         $minutos = (int) ceil($segundosBloqueado / 60);
         $error = "Demasiados intentos fallidos. Intenta de nuevo en $minutos minuto" . ($minutos === 1 ? '' : 's') . '.';
     } else {
@@ -33,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: reservas.php');
             exit;
         }
+        registrar_intento_ip($pdo, $ip);
         if ($username !== '') {
             registrar_intento_fallido($pdo, $username);
         }

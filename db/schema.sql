@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
   bancolombia_tipo_cuenta VARCHAR(20) NULL,
   bancolombia_numero VARCHAR(30) NULL,
   bancolombia_titular VARCHAR(120) NULL,
+  mostrar_datos_pago_publico TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -81,6 +82,8 @@ CREATE TABLE IF NOT EXISTS solicitudes (
   huespedes SMALLINT UNSIGNED NULL,
   valor_estimado DECIMAL(12,2) NULL,
   estado ENUM('pendiente','aprobada','rechazada') NOT NULL DEFAULT 'pendiente',
+  token_confirmacion CHAR(64) NULL,
+  token_expira_at DATETIME NULL,
   reserva_id INT UNSIGNED NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_solicitudes_apartamento FOREIGN KEY (apartamento_id)
@@ -88,7 +91,8 @@ CREATE TABLE IF NOT EXISTS solicitudes (
   CONSTRAINT fk_solicitudes_reserva FOREIGN KEY (reserva_id)
     REFERENCES reservas(id) ON DELETE SET NULL,
   INDEX idx_solicitudes_apartamento (apartamento_id),
-  INDEX idx_solicitudes_estado (estado)
+  INDEX idx_solicitudes_estado (estado),
+  UNIQUE KEY idx_solicitudes_token (token_confirmacion)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS resenas (
@@ -138,6 +142,15 @@ CREATE TABLE IF NOT EXISTS login_intentos (
   username VARCHAR(50) NOT NULL,
   intentos SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   bloqueado_hasta DATETIME NULL,
+  nivel_bloqueo TINYINT UNSIGNED NOT NULL DEFAULT 0,
   actualizado_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY idx_login_intentos_username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS login_intentos_ip (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  ip VARCHAR(45) NOT NULL,
+  intentos SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  ventana_desde DATETIME NOT NULL,
+  UNIQUE KEY idx_login_intentos_ip (ip)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

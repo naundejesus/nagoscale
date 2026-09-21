@@ -167,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     continue;
                 }
                 $archivo = bin2hex(random_bytes(16)) . '.' . $mimeExtensiones[$mime];
-                if (move_uploaded_file($tmpName, $uploadDir . $archivo)) {
+                if (reencodar_imagen_segura($tmpName, $mime, $uploadDir . $archivo)) {
                     $stmt = $pdo->prepare('INSERT INTO apartamento_fotos (apartamento_id, archivo) VALUES (?, ?)');
                     $stmt->execute([$apartamentoId, $archivo]);
                     $totalFotos++;

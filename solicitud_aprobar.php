@@ -39,45 +39,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'El valor total debe ser mayor que cero.';
     } elseif (!in_array($plataforma, $plataformasValidas, true)) {
         $error = 'Selecciona una plataforma válida.';
-    } else {
-        $stmt = $pdo->prepare(
-            'SELECT COUNT(*) FROM reservas WHERE apartamento_id = ? AND fecha_inicio < ? AND fecha_fin > ?'
-        );
-        $stmt->execute([$solicitud['apartamento_id'], $solicitud['fecha_fin'], $solicitud['fecha_inicio']]);
-        if ((int) $stmt->fetchColumn() > 0) {
-            $error = 'Ya existe una reserva confirmada que se cruza con estas fechas. No se puede aprobar.';
-        }
     }
 
     if (!$error) {
-        $valorPropietario = round($valorTotal * 0.75, 2);
-        $valorComision = round($valorTotal - $valorPropietario, 2);
         $notas = 'Cliente: ' . $solicitud['nombre_cliente'] . ', Tel: ' . $solicitud['telefono'];
         if ($solicitud['correo']) {
             $notas .= ', ' . $solicitud['correo'];
         }
 
-        $stmt = $pdo->prepare(
-            'INSERT INTO reservas (apartamento_id, fecha_inicio, fecha_fin, plataforma, valor_total, valor_propietario, valor_comision, notas)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+        $resultado = crear_reserva_sin_solape(
+            $pdo, (int) $solicitud['apartamento_id'], $solicitud['fecha_inicio'], $solicitud['fecha_fin'],
+            null, $plataforma, $valorTotal, $notas
         );
-        $stmt->execute([
-            $solicitud['apartamento_id'],
-            $solicitud['fecha_inicio'],
-            $solicitud['fecha_fin'],
-            $plataforma,
-            $valorTotal,
-            $valorPropietario,
-            $valorComision,
-            $notas,
-        ]);
-        $reservaId = (int) $pdo->lastInsertId();
 
-        $stmt = $pdo->prepare("UPDATE solicitudes SET estado = 'aprobada', reserva_id = ? WHERE id = ?");
-        $stmt->execute([$reservaId, $id]);
+        if (isset($resultado['error'])) {
+            $error = $resultado['error'] === 'Ese alojamiento ya tiene una reserva que se cruza con las fechas seleccionadas.'
+                ? 'Ya existe una reserva confirmada que se cruza con estas fechas. No se puede aprobar.'
+                : $resultado['error'];
+        } else {
+            $stmt = $pdo->prepare("UPDATE solicitudes SET estado = 'aprobada', reserva_id = ? WHERE id = ?");
+            $stmt->execute([$resultado['reserva_id'], $id]);
 
-        header('Location: solicitudes.php?aprobada=1');
-        exit;
+            header('Location: solicitudes.php?aprobada=1');
+            exit;
+        }
     }
 }
 
