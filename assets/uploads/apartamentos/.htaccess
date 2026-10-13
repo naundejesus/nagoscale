@@ -1,0 +1,9 @@
+# Esta carpeta es pública a propósito (fotos de marketing de apartamentos).
+# Estas reglas solo prohíben que un archivo aquí dentro se interprete como
+# script, sea cual sea su extensión o contenido.
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>
+<FilesMatch "\.(php|phtml|php\d|phar|cgi|pl)$">
+  Require all denied
+</FilesMatch>
